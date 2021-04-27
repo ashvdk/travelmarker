@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:travelpointer/classes/addanewlocation.dart';
+import 'package:travelpointer/models/alldata.dart';
 import 'package:travelpointer/screens/homepage.dart';
 import 'package:travelpointer/screens/map.dart';
 import 'package:travelpointer/screens/userregisteration.dart';
@@ -10,12 +13,27 @@ import 'package:google_sign_in/google_sign_in.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginCheck(),
-    ),
-  );
+  runApp(MyAPP());
+}
+
+class MyAPP extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: AllData(),
+        ),
+        ChangeNotifierProvider.value(
+          value: AddANewLocation(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: LoginCheck(),
+      ),
+    );
+  }
 }
 
 class LoginCheck extends StatefulWidget {

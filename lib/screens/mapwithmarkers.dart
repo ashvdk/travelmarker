@@ -2,94 +2,103 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-Completer<GoogleMapController> _controller = Completer();
+import 'package:provider/provider.dart';
+import 'package:travelpointer/components/googlemap.dart';
+import 'package:travelpointer/components/pageviewlocationinfo.dart';
+import 'package:travelpointer/models/alldata.dart';
 
 class MapWithMarkers extends StatefulWidget {
-  final double lat;
-  final double lng;
-  final String city;
-  const MapWithMarkers({Key key, this.lat, this.lng, this.city})
-      : super(key: key);
+  final int index;
+  // final double lat;
+  // final double lng;
+  // final String city;
+  // final BitmapDescriptor myIcon;
+  const MapWithMarkers({Key key, this.index}) : super(key: key);
   @override
   _MapWithMarkersState createState() => _MapWithMarkersState();
 }
 
 class _MapWithMarkersState extends State<MapWithMarkers> {
+  Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = {};
-  Widget buildBottomSheet(BuildContext context) {
-    return Container(
-      height: 200.0,
-      child: Text('Hello Bottom Sheet'),
-    );
+  Map allFunctionandMethods = {};
+  // Widget buildBottomSheet(BuildContext context) {
+  //   return Container(
+  //     height: 200.0,
+  //     child: Text('Hello Bottom Sheet'),
+  //   );
+  // }
+  BitmapDescriptor myIcon;
+
+  void moveTheCamera() async {
+    // final GoogleMapController controller = await _controller.future;
+    // var selectedMarker =
+    //     Provider.of<AllData>(context, listen: false).getMarkers[widget.index];
+    // controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    //   target: LatLng(selectedMarker['location']['coordinates'][0],
+    //       selectedMarker['location']['coordinates'][1]),
+    //   zoom: 17.00,
+    // )));
+    print("${widget.index} this is the index");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(48, 48)), 'assets/mappin.png')
+        .then((onValue) {
+      setState(() {
+        myIcon = onValue;
+      });
+      print(myIcon);
+    });
+    moveTheCamera();
   }
 
   @override
   Widget build(BuildContext context) {
-    final LatLng _center = LatLng(widget.lat, widget.lng);
+    final LatLng _center = LatLng(22.5937, 78.9629);
     final CameraPosition _kGooglePlex = CameraPosition(
       target: _center,
-      zoom: 12,
+      zoom: 5,
     );
-    if (widget.city == "Mysore") {
-      _markers = {
+
+    PageController _pageviewcontroller = PageController(
+      initialPage: 0,
+    );
+
+    var allMarkers = Provider.of<AllData>(context).getMarkers;
+    Set<Marker> tempMarkers = {};
+    var i = 0;
+
+    for (var marker in allMarkers) {
+      tempMarkers.add(
         Marker(
           // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId("kgvgv6556nvvuh"),
-          position: LatLng(12.3052, 76.6550),
-          infoWindow: InfoWindow(
-            title: 'Mysore Palace',
-            snippet: '5 Star Rating',
+          markerId: MarkerId("$i"),
+          position: LatLng(
+            double.parse(marker['location']['coordinates'][0]),
+            double.parse(marker['location']['coordinates'][1]),
           ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId("kgvgv6556nvvuh"),
-          position: LatLng(12.3100, 76.6450),
-          infoWindow: InfoWindow(
-            title: 'Mysore Palace',
-            snippet: '5 Star Rating',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId("kgv546556nvvuh"),
-          position: LatLng(12.3200, 76.6750),
-          infoWindow: InfoWindow(
-            title: 'Chamundi Beta',
-            snippet: '5 Star Rating',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId("kg35fgbvuhdb"),
-          position: LatLng(12.3300, 76.6850),
-          infoWindow: InfoWindow(
-            title: 'Mysore zoo',
-            snippet: '5 Star Rating',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-      };
-    } else if (widget.city == "Chikmagalur") {
-      _markers = {
-        Marker(
-            // This marker id can be anything that uniquely identifies each marker.
-            markerId: MarkerId("fh45dtnd6nvvuh"),
-            position: LatLng(13.3229, 75.4330),
-            infoWindow: InfoWindow(
-              title: 'Hebbe Falls',
-              snippet: '5 Star Rating',
+          icon: myIcon,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MapWithMarkers(
+                index: i,
+              ),
             ),
-            icon: BitmapDescriptor.defaultMarker,
-            onTap: () {
-              showModalBottomSheet(context: context, builder: buildBottomSheet);
-            })
-      };
+          ),
+        ),
+      );
+      i++;
     }
+    //print(tempMarkers.length);
+    setState(() {
+      _markers = {...tempMarkers};
+    });
+    //allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -98,20 +107,31 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
         ),
         title: Text('All Your Markers'),
       ),
-      body: Container(
-        child: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
-          markers: _markers,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: Text('Add Marker'),
-        icon: Icon(Icons.add_location_alt_outlined),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: GoogleMap(
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+              markers: _markers,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: PageView(
+              controller: _pageviewcontroller,
+              children: [
+                PageViewLocationInfo(),
+                PageViewLocationInfo(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

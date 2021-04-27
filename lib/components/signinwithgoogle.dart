@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:travelpointer/screens/map.dart';
+import 'package:travelpointer/classes/restapi.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class SignInWithGoogle extends StatelessWidget {
   final Function setUser;
@@ -36,35 +35,53 @@ class SignInWithGoogle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      color: Colors.redAccent,
-      textColor: Colors.white,
-      disabledColor: Colors.grey,
-      disabledTextColor: Colors.black,
-      splashColor: Colors.blueAccent,
-      height: 60.0,
-      onPressed: () {
-        signInWithGoogle().then((value) async {
-          FirebaseAuth.instance.currentUser
-              .getIdToken(true)
-              .then((token) async {
-            http.Response response =
-                await http.post('http://192.168.0.7:6000/user', body: {
-              "uid": value.user.uid,
-              "email": value.user.email,
-              "displayName": value.user.displayName
-            }, headers: {
-              HttpHeaders.authorizationHeader: token
-            });
-            if (response.statusCode == 200) {
-              setUser();
-            } else {
-              signOutGoogle().then((value) => setUser());
-            }
-          });
-        });
-      },
-      child: Text("LOGIN WITH GOOGLE"),
+    return Stack(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: FlatButton(
+            color: Color(0xFF05a859),
+            textColor: Colors.white,
+            disabledColor: Colors.grey,
+            disabledTextColor: Colors.black,
+            splashColor: Colors.blueAccent,
+            height: 80.0,
+            onPressed: () {
+              signInWithGoogle().then((value) async {
+                FirebaseAuth.instance.currentUser
+                    .getIdToken(true)
+                    .then((token) async {
+                  var body = {
+                    "uid": value.user.uid,
+                    "email": value.user.email,
+                    "displayName": value.user.displayName
+                  };
+                  http.Response response =
+                      await RestAPI().postTheRequest('user', body, token);
+                  if (response.statusCode == 200) {
+                    setUser();
+                  } else {
+                    signOutGoogle().then((value) => setUser());
+                  }
+                });
+              });
+            },
+            child: Text(
+              "Sign in with Google",
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 20.0,
+          left: 70.0,
+          child: Image.asset(
+            'assets/googleimage.png',
+            width: 40.0,
+            color: Colors.white,
+          ),
+        )
+      ],
     );
   }
 }

@@ -37,6 +37,8 @@ dependencies:
   cloud_firestore: ^0.16.0
   google_sign_in: ^4.5.9
   http: ^0.12.2
+  provider: ^4.3.3
+  flutter_signin_button: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +58,11 @@ flutter:
   assets:
     - assets/mapsstyle.json
     - assets/temple.png
+    - assets/googleimage.png
+    - assets/locationmarker.png
+    - assets/markerimageone.png
+    - assets/markerimage_2.png
+    - assets/mappin.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

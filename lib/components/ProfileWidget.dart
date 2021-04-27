@@ -27,7 +27,7 @@ class ProfileWidget extends StatelessWidget {
                     Text(
                       '${user.displayName}',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 30.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -38,7 +38,7 @@ class ProfileWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ProfileInfo(
-                            title: 'Articles',
+                            title: 'Trips',
                           ),
                         ),
                         SizedBox(
@@ -65,20 +65,20 @@ class ProfileWidget extends StatelessWidget {
               SizedBox(width: 30.0),
             ],
           ),
-          SizedBox(height: 30.0),
-          Row(
-            children: [
-              SizedBox(width: 30.0),
-              Expanded(child: FlatButtonComponent(buttonTitle: "Chat")),
-              SizedBox(width: 30.0),
-              Expanded(child: FlatButtonComponent(buttonTitle: "Follow")),
-              SizedBox(width: 30.0),
-            ],
-          ),
-          SizedBox(height: 30.0),
+          // SizedBox(height: 30.0),
+          // Row(
+          //   children: [
+          //     SizedBox(width: 30.0),
+          //     Expanded(child: FlatButtonComponent(buttonTitle: "Chat")),
+          //     SizedBox(width: 30.0),
+          //     Expanded(child: FlatButtonComponent(buttonTitle: "Follow")),
+          //     SizedBox(width: 30.0),
+          //   ],
+          // ),
+          SizedBox(height: 50.0),
           Expanded(
             child: MapSample(),
-          )
+          ),
         ],
       ),
     );

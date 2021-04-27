@@ -32,17 +32,7 @@ class _UserRegisterationState extends State<UserRegisteration> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SignInWithGoogle(setUser: widget.setUser),
-            SizedBox(
-              height: 20.0,
-            ),
-            SignInWithFacebook(),
-            SizedBox(
-              height: 20.0,
-            ),
-            SigninWithTwitter()
-          ],
+          children: [SignInWithGoogle(setUser: widget.setUser)],
         ),
       ),
     );

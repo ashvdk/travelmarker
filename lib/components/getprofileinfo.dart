@@ -7,18 +7,17 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:travelpointer/models/alldata.dart';
-import 'package:travelpointer/screens/addlocation.dart';
 import 'dart:convert';
 
 import 'package:travelpointer/screens/addnewlocation.dart';
 import 'package:travelpointer/classes/restapi.dart';
 
-class ProfilePage extends StatefulWidget {
+class GetProfileInfo extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _GetProfileInfoState createState() => _GetProfileInfoState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _GetProfileInfoState extends State<GetProfileInfo> {
   Future getProfileInfo() async {
     var token = await FirebaseAuth.instance.currentUser.getIdToken(true);
     var uid = FirebaseAuth.instance.currentUser.uid;
@@ -31,14 +30,14 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => AddLocationNavigation(),
-            ),
-          );
-          //Navigator.pushNamed(context, 'addanewlocation');
-          //Navigator.of(context).pushNamed('addanewlocation');
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (BuildContext context) => AddaNewLocation(),
+          //   ),
+          // );
+          Navigator.pushNamed(context, 'addanewlocation');
+          Navigator.of(context).pushNamed('addanewlocation');
         },
         child: Icon(Icons.add_location_alt_outlined),
       ),
