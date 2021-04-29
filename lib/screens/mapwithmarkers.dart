@@ -8,12 +8,13 @@ import 'package:travelpointer/components/pageviewlocationinfo.dart';
 import 'package:travelpointer/models/alldata.dart';
 
 class MapWithMarkers extends StatefulWidget {
-  final int index;
+  final LatLng latlng;
+  final String id;
   // final double lat;
   // final double lng;
   // final String city;
   // final BitmapDescriptor myIcon;
-  const MapWithMarkers({Key key, this.index}) : super(key: key);
+  const MapWithMarkers({Key key, this.latlng, this.id}) : super(key: key);
   @override
   _MapWithMarkersState createState() => _MapWithMarkersState();
 }
@@ -21,7 +22,9 @@ class MapWithMarkers extends StatefulWidget {
 class _MapWithMarkersState extends State<MapWithMarkers> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = {};
+  List<Widget> pageviewlocationinfo = [];
   Map allFunctionandMethods = {};
+  int pageNumber = 0;
   // Widget buildBottomSheet(BuildContext context) {
   //   return Container(
   //     height: 200.0,
@@ -30,16 +33,13 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
   // }
   BitmapDescriptor myIcon;
 
-  void moveTheCamera() async {
-    // final GoogleMapController controller = await _controller.future;
-    // var selectedMarker =
-    //     Provider.of<AllData>(context, listen: false).getMarkers[widget.index];
-    // controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-    //   target: LatLng(selectedMarker['location']['coordinates'][0],
-    //       selectedMarker['location']['coordinates'][1]),
-    //   zoom: 17.00,
-    // )));
-    print("${widget.index} this is the index");
+  void moveTheCamera(LatLng latlng) async {
+    final GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: latlng,
+      zoom: 17.00,
+    )));
   }
 
   @override
@@ -51,9 +51,8 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
       setState(() {
         myIcon = onValue;
       });
-      print(myIcon);
     });
-    moveTheCamera();
+    moveTheCamera(widget.latlng);
   }
 
   @override
@@ -64,15 +63,12 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
       zoom: 5,
     );
 
-    PageController _pageviewcontroller = PageController(
-      initialPage: 0,
-    );
-
     var allMarkers = Provider.of<AllData>(context).getMarkers;
     Set<Marker> tempMarkers = {};
     var i = 0;
 
     for (var marker in allMarkers) {
+      //print(marker["_id"]);
       tempMarkers.add(
         Marker(
           // This marker id can be anything that uniquely identifies each marker.
@@ -82,18 +78,23 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
             double.parse(marker['location']['coordinates'][1]),
           ),
           icon: myIcon,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MapWithMarkers(
-                index: i,
-              ),
-            ),
-          ),
         ),
       );
+      pageviewlocationinfo.add(PageViewLocationInfo(
+        marker: marker,
+      ));
+      // print(marker["_id"] + "came from database");
+      // print(widget.id + "came from passing");
+      if (marker["_id"] == widget.id) {
+        setState(() {
+          pageNumber = i;
+        });
+      }
       i++;
     }
+    PageController _pageviewcontroller = PageController(
+      initialPage: pageNumber,
+    );
     //print(tempMarkers.length);
     setState(() {
       _markers = {...tempMarkers};
@@ -124,11 +125,16 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
           Expanded(
             flex: 2,
             child: PageView(
+              onPageChanged: (changedPageNo) {
+                var latAndLng = Provider.of<AllData>(context, listen: false)
+                    .getMarkers[changedPageNo];
+                moveTheCamera(LatLng(
+                  double.parse(latAndLng['location']['coordinates'][0]),
+                  double.parse(latAndLng['location']['coordinates'][1]),
+                ));
+              },
               controller: _pageviewcontroller,
-              children: [
-                PageViewLocationInfo(),
-                PageViewLocationInfo(),
-              ],
+              children: pageviewlocationinfo,
             ),
           ),
         ],

@@ -29,10 +29,7 @@ class MapSampleState extends State<MapSample> {
       setState(() {
         myIcon = onValue;
       });
-
-      print(myIcon);
     });
-    print(myIcon);
   }
 
   static const LatLng _center = const LatLng(22.5937, 78.9629);
@@ -40,18 +37,6 @@ class MapSampleState extends State<MapSample> {
     target: _center,
     zoom: 5,
   );
-  void moveToTheOtherPage(context, i) {
-    var ourIndex = i;
-    print(ourIndex);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => MapWithMarkers(
-    //       index: i,
-    //     ),
-    //   ),
-    // );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +55,18 @@ class MapSampleState extends State<MapSample> {
           ),
           icon: myIcon,
           onTap: () {
-            var ourIndex = i;
-            moveToTheOtherPage(context, ourIndex);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MapWithMarkers(
+                  latlng: LatLng(
+                    double.parse(marker['location']['coordinates'][0]),
+                    double.parse(marker['location']['coordinates'][1]),
+                  ),
+                  id: marker["_id"],
+                ),
+              ),
+            );
           },
         ),
       );

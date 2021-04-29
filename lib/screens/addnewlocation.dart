@@ -29,7 +29,7 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
   @override
   void initState() {
     super.initState();
-    print("called init ");
+
     _goToTheLake();
   }
 
