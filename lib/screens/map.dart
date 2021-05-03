@@ -40,7 +40,7 @@ class MapSampleState extends State<MapSample> {
 
   @override
   Widget build(BuildContext context) {
-    var allMarkers = Provider.of<AllData>(context).getMarkers;
+    var allMarkers = Provider.of<AllData>(context, listen: true).getMarkers;
     Set<Marker> tempMarkers = {};
     var i = 0;
 

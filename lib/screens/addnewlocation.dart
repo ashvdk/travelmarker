@@ -14,6 +14,7 @@ import 'package:geocoder/geocoder.dart';
 import 'dart:convert';
 
 import 'package:travelpointer/models/alldata.dart';
+import 'package:travelpointer/screens/locationsearch.dart';
 import 'package:travelpointer/screens/selectcategory.dart';
 
 class AddaNewLocation extends StatefulWidget {
@@ -70,12 +71,21 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
         await RestAPI().postTheRequest('user/$uid/location', body, token);
     if (response.statusCode == 200) {
       var userlocation = jsonDecode(response.body);
+      print(userlocation['result'][0]['_id']);
+      print(userlocation['result'][0]['location']['coordinates']);
       Provider.of<AllData>(context, listen: false)
           .setMarkers(userlocation['result']);
       Navigator.of(context).pushNamedAndRemoveUntil(
-        'showthelocations',
-        (Route<dynamic> route) => false,
-      );
+          'showthelocations', (Route<dynamic> route) => false,
+          arguments: {
+            'latlang': LatLng(
+              double.parse(
+                  userlocation['result'][0]['location']['coordinates'][0]),
+              double.parse(
+                  userlocation['result'][0]['location']['coordinates'][1]),
+            ),
+            'id': userlocation['result'][0]['_id']
+          });
     }
   }
 
@@ -369,11 +379,23 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF05a859),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('Add a new location'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            // onPressed: () {
+            //   showSearch(
+            //     context: context,
+            //     delegate: LocationSearch(),
+            //   );
+            // },
+          ),
+        ],
       ),
       body: selectedElements(),
       floatingActionButton: stepperForm == "collect_map_coordinates"

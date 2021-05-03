@@ -9,7 +9,11 @@ class RestAPI {
   }
 
   Future getTheRequest(String apiURL, var token) async {
-    return await http
-        .get('$url$apiURL', headers: {HttpHeaders.authorizationHeader: token});
+    if (token == "NO_TOKEN_PRESENT") {
+      return await http.get('$url$apiURL');
+    } else {
+      return await http.get('$url$apiURL',
+          headers: {HttpHeaders.authorizationHeader: token});
+    }
   }
 }

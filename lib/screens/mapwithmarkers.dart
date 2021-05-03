@@ -32,6 +32,7 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
   //   );
   // }
   BitmapDescriptor myIcon;
+  PageController _pageviewcontroller;
 
   void moveTheCamera(LatLng latlng) async {
     final GoogleMapController controller = await _controller.future;
@@ -66,8 +67,9 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
     var allMarkers = Provider.of<AllData>(context).getMarkers;
     Set<Marker> tempMarkers = {};
     var i = 0;
-
+    List<Widget> pageviewlocationinfoTemp = [];
     for (var marker in allMarkers) {
+      int setPageNo = i;
       //print(marker["_id"]);
       tempMarkers.add(
         Marker(
@@ -78,26 +80,34 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
             double.parse(marker['location']['coordinates'][1]),
           ),
           icon: myIcon,
+          onTap: () {
+            print(setPageNo);
+            _pageviewcontroller.animateToPage(setPageNo,
+                duration: Duration(milliseconds: 250),
+                curve: Curves.bounceInOut);
+            // setState(() {
+            //   pageNumber = setPageNo;
+            // });
+            //print(setPageNo);
+          },
         ),
       );
-      pageviewlocationinfo.add(PageViewLocationInfo(
-        marker: marker,
-      ));
-      // print(marker["_id"] + "came from database");
-      // print(widget.id + "came from passing");
-      if (marker["_id"] == widget.id) {
-        setState(() {
-          pageNumber = i;
-        });
-      }
+      pageviewlocationinfoTemp.add(
+        PageViewLocationInfo(
+          marker: marker,
+        ),
+      );
       i++;
     }
-    PageController _pageviewcontroller = PageController(
+
+    print(pageviewlocationinfo.length);
+    _pageviewcontroller = PageController(
       initialPage: pageNumber,
     );
     //print(tempMarkers.length);
     setState(() {
       _markers = {...tempMarkers};
+      pageviewlocationinfo = [...pageviewlocationinfoTemp];
     });
     //allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
     return Scaffold(
@@ -126,6 +136,7 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
             flex: 2,
             child: PageView(
               onPageChanged: (changedPageNo) {
+                print(changedPageNo);
                 var latAndLng = Provider.of<AllData>(context, listen: false)
                     .getMarkers[changedPageNo];
                 moveTheCamera(LatLng(

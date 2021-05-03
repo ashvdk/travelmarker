@@ -37,7 +37,10 @@ class AddLocationNavigation extends StatelessWidget {
             //       lng: arguments['lng'],
             //       city: "${arguments['city']}",
             //     );
-            builder = (BuildContext _) => MapWithMarkers();
+            builder = (BuildContext _) => MapWithMarkers(
+                  latlng: arguments['latlang'],
+                  id: arguments['id'],
+                );
             break;
           default:
             throw Exception('Invalid route: ${settings.name}');
