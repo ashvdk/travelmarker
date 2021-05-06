@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:travelpointer/components/googlemap.dart';
 import 'package:travelpointer/components/pageviewlocationinfo.dart';
 import 'package:travelpointer/models/alldata.dart';
+import 'package:travelpointer/models/markerimage.dart';
 
 class MapWithMarkers extends StatefulWidget {
   final LatLng latlng;
@@ -79,7 +80,8 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
             double.parse(marker['location']['coordinates'][0]),
             double.parse(marker['location']['coordinates'][1]),
           ),
-          icon: myIcon,
+          icon: Provider.of<MarkerImage>(context, listen: true)
+              .getMarkers(marker['category']),
           onTap: () {
             print(setPageNo);
             _pageviewcontroller.animateToPage(setPageNo,
@@ -97,18 +99,22 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
           marker: marker,
         ),
       );
+      if (marker['_id'] == widget.id) {
+        pageNumber = setPageNo;
+      }
       i++;
     }
 
-    print(pageviewlocationinfo.length);
-    _pageviewcontroller = PageController(
-      initialPage: pageNumber,
-    );
-    //print(tempMarkers.length);
+    print(pageviewlocationinfoTemp.length);
     setState(() {
       _markers = {...tempMarkers};
       pageviewlocationinfo = [...pageviewlocationinfoTemp];
     });
+    _pageviewcontroller = PageController(
+      initialPage: pageNumber,
+    );
+    //print(tempMarkers.length);
+
     //allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
     return Scaffold(
       appBar: AppBar(

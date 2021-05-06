@@ -63,6 +63,9 @@ flutter:
     - assets/markerimageone.png
     - assets/markerimage_2.png
     - assets/mappin.png
+    - assets/icons8-beach-100.png
+    - assets/icons8-waterfall-48.png
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

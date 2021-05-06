@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/components/googlemap.dart';
 import 'package:travelpointer/models/alldata.dart';
+import 'package:travelpointer/models/markerimage.dart';
 import 'package:travelpointer/screens/mapwithmarkers.dart';
 import 'package:location/location.dart';
 
@@ -53,7 +54,8 @@ class MapSampleState extends State<MapSample> {
             double.parse(marker['location']['coordinates'][0]),
             double.parse(marker['location']['coordinates'][1]),
           ),
-          icon: myIcon,
+          icon: Provider.of<MarkerImage>(context, listen: true)
+              .getMarkers(marker['category']),
           onTap: () {
             Navigator.push(
               context,

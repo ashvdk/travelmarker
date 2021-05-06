@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
 import 'package:travelpointer/models/alldata.dart';
+import 'package:travelpointer/models/markerimage.dart';
 import 'package:travelpointer/screens/homepage.dart';
 import 'package:travelpointer/screens/map.dart';
 import 'package:travelpointer/screens/userregisteration.dart';
@@ -26,6 +27,9 @@ class MyAPP extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: AddANewLocation(),
+        ),
+        ChangeNotifierProvider.value(
+          value: MarkerImage(),
         ),
       ],
       child: MaterialApp(
@@ -54,6 +58,7 @@ class _LoginCheckState extends State<LoginCheck> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<MarkerImage>(context, listen: false).setMarkers();
     if (user == null) {
       return UserRegisteration(setUser: setUser);
     } else {
