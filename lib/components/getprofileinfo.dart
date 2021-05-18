@@ -49,13 +49,7 @@ class _GetProfileInfoState extends State<GetProfileInfo> {
               var user = jsonDecode(profileSnap.data.body);
               Provider.of<AllData>(context, listen: false)
                   .setMarkers(user['locationdetails']);
-              return ProfileWidget(
-                user: ProfileUser(
-                  uid: user['_id'],
-                  email: user['email'],
-                  displayName: user['displayName'],
-                ),
-              );
+              return ProfileWidget();
             } else {
               return Container(
                 child: Center(

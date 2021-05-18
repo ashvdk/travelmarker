@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class FeedScreen extends StatefulWidget {
   final Function setUser;
@@ -12,11 +13,12 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  final storage = new FlutterSecureStorage();
   Future<void> signOutGoogle() async {
     await FirebaseAuth.instance.signOut();
-
-    print("User Signed Out");
-    print(FirebaseAuth.instance.currentUser);
+    await GoogleSignIn().signOut();
+    await storage.deleteAll();
+    widget.setUser();
   }
 
   @override
@@ -33,7 +35,7 @@ class _FeedScreenState extends State<FeedScreen> {
             splashColor: Colors.blueAccent,
             height: 60.0,
             onPressed: () {
-              signOutGoogle().then((value) => widget.setUser());
+              signOutGoogle();
             },
             child: Text("LOGOUT"),
           )

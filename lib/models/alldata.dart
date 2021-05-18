@@ -9,8 +9,7 @@ class AllData extends ChangeNotifier {
   }
 
   void setMarkers(List markers) async {
-    print("came to provider");
-    _markersOfCities = [..._markersOfCities, ...markers];
+    _markersOfCities = [...markers];
     notifyListeners();
     // for (var marker in markers) {
     //   var city = marker['city'];
@@ -31,5 +30,10 @@ class AllData extends ChangeNotifier {
     //     _markersOfCities[city]['locations'] = [...getlocations];
     //   }
     // }
+  }
+
+  void setanotherMarker(List markers) {
+    _markersOfCities = [..._markersOfCities, ...markers];
+    notifyListeners();
   }
 }

@@ -80,9 +80,15 @@ class MapSampleState extends State<MapSample> {
     });
     allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
     return Container(
-      height: 200.0,
-      child: GoogleMaps(
-        allMethodsandProperties: allFunctionandMethods,
+      color: Color(0xFF05a859),
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        child: GoogleMaps(
+          allMethodsandProperties: allFunctionandMethods,
+        ),
       ),
     );
   }

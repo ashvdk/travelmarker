@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:travelpointer/screens/profilepage.dart';
 import 'package:travelpointer/screens/feed.dart';
+import 'package:travelpointer/screens/searchscreen.dart';
 
 class HomePage extends StatefulWidget {
   final Function setUser;
@@ -28,12 +29,12 @@ class _HomePageState extends State<HomePage> {
         return FeedScreen(setUser: widget.setUser);
         break;
       case 1:
-        return ProfilePage();
+        return ProfilePage(
+          uid: FirebaseAuth.instance.currentUser.uid,
+        );
         break;
       default:
-        return Text(
-          'Index 2: School',
-        );
+        return SearchScreen();
         break;
     }
   }

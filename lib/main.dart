@@ -1,15 +1,18 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
 import 'package:travelpointer/models/alldata.dart';
+import 'package:travelpointer/models/firebasedata.dart';
 import 'package:travelpointer/models/markerimage.dart';
+import 'package:travelpointer/models/userdetails.dart';
+import 'package:travelpointer/screens/addusernamescreen.dart';
 import 'package:travelpointer/screens/homepage.dart';
-import 'package:travelpointer/screens/map.dart';
 import 'package:travelpointer/screens/userregisteration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = new FlutterSecureStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +34,14 @@ class MyAPP extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: MarkerImage(),
         ),
+        ChangeNotifierProvider.value(
+          value: UserDetails(),
+        ),
+        ChangeNotifierProvider.value(
+          value: FirebaseData(),
+        ),
       ],
+      //FirebaseData
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: LoginCheck(),
@@ -46,14 +56,24 @@ class LoginCheck extends StatefulWidget {
 }
 
 class _LoginCheckState extends State<LoginCheck> {
-  var user = FirebaseAuth.instance.currentUser;
+  var user = null;
+  var userregistered = null;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setUser();
+  }
 
   void setUser() async {
+    String user_registered = await storage.read(key: "userregistered");
+    print("Checking user registeration value");
+
     setState(() {
       user = FirebaseAuth.instance.currentUser;
+      userregistered = user_registered;
     });
-
-    //http.Response response = await http.post(url)
   }
 
   @override
@@ -62,7 +82,14 @@ class _LoginCheckState extends State<LoginCheck> {
     if (user == null) {
       return UserRegisteration(setUser: setUser);
     } else {
-      return HomePage(setUser: setUser);
+      Provider.of<FirebaseData>(context, listen: false).setToken();
+      if (userregistered == "no") {
+        return AddUsernameScreen(
+          setUser: setUser,
+        );
+      } else {
+        return HomePage(setUser: setUser);
+      }
     }
   }
 }

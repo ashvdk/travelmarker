@@ -74,7 +74,7 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
       print(userlocation['result'][0]['_id']);
       print(userlocation['result'][0]['location']['coordinates']);
       Provider.of<AllData>(context, listen: false)
-          .setMarkers(userlocation['result']);
+          .setanotherMarker(userlocation['result']);
       Navigator.of(context).pushNamedAndRemoveUntil(
           'showthelocations', (Route<dynamic> route) => false,
           arguments: {

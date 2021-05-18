@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfo extends StatelessWidget {
@@ -6,18 +7,18 @@ class ProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          '25',
+          style: TextStyle(
+              fontSize: 25.0, fontWeight: FontWeight.w600, color: Colors.white),
+        ),
         Text(
           '$title',
           style: TextStyle(
-            color: Colors.grey,
-            fontSize: 10.0,
+            color: Colors.white,
+            fontSize: 14.0,
           ),
-        ),
-        Text(
-          '25',
-          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w600),
         )
       ],
     );

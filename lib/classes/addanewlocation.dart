@@ -8,13 +8,10 @@ class AddANewLocation extends ChangeNotifier {
   String _description = "";
   void setSaveCurrentLocation(List latLng) {
     _currentLocationData = [latLng[0], latLng[1]];
-    print(_currentLocationData);
   }
 
   void setCategory(String categoryType) {
     _category = categoryType;
-    print(_currentLocationData);
-    print(_category);
   }
 
   void setTitleDescription(String title, String description) {

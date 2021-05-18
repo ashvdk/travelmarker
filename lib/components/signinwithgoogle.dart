@@ -3,10 +3,14 @@ import 'package:travelpointer/classes/restapi.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
 
 class SignInWithGoogle extends StatelessWidget {
+  final storage = new FlutterSecureStorage();
   final Function setUser;
-  SignInWithGoogle({this.setUser});
+  final Function setLoading;
+  SignInWithGoogle({this.setUser, this.setLoading});
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
@@ -27,9 +31,9 @@ class SignInWithGoogle extends StatelessWidget {
 
   Future<void> signOutGoogle() async {
     await FirebaseAuth.instance.signOut();
-
-    print("User Signed Out");
-    print(FirebaseAuth.instance.currentUser);
+    await GoogleSignIn().signOut();
+    await storage.deleteAll();
+    setUser();
   }
 
   @override
@@ -46,23 +50,27 @@ class SignInWithGoogle extends StatelessWidget {
             splashColor: Colors.blueAccent,
             height: 80.0,
             onPressed: () {
+              setLoading();
               signInWithGoogle().then((value) async {
-                FirebaseAuth.instance.currentUser
-                    .getIdToken(true)
-                    .then((token) async {
-                  var body = {
-                    "uid": value.user.uid,
-                    "email": value.user.email,
-                    "displayName": value.user.displayName
-                  };
-                  http.Response response =
-                      await RestAPI().postTheRequest('user', body, token);
-                  if (response.statusCode == 200) {
-                    setUser();
+                // await storage.write(key: "userregistered", value: "no");
+                // setUser();
+                var token =
+                    await FirebaseAuth.instance.currentUser.getIdToken(true);
+                var value = FirebaseAuth.instance.currentUser;
+
+                http.Response response = await RestAPI()
+                    .getTheRequest('getuserdetails/${value.uid}', token);
+
+                if (response.statusCode == 200) {
+                  var checkusername = jsonDecode(response.body);
+                  if (checkusername['message'] == "NO_USERNAME_FOUND") {
+                    storage.write(key: "userregistered", value: "no");
                   } else {
-                    signOutGoogle().then((value) => setUser());
+                    storage.write(key: "userregistered", value: "yes");
                   }
-                });
+                  setLoading();
+                  setUser();
+                }
               });
             },
             child: Text(

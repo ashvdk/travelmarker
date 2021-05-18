@@ -26,14 +26,9 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
   List<Widget> pageviewlocationinfo = [];
   Map allFunctionandMethods = {};
   int pageNumber = 0;
-  // Widget buildBottomSheet(BuildContext context) {
-  //   return Container(
-  //     height: 200.0,
-  //     child: Text('Hello Bottom Sheet'),
-  //   );
-  // }
   BitmapDescriptor myIcon;
   PageController _pageviewcontroller;
+  double containerHeight = 200.0;
 
   void moveTheCamera(LatLng latlng) async {
     final GoogleMapController controller = await _controller.future;
@@ -55,6 +50,12 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
       });
     });
     moveTheCamera(widget.latlng);
+  }
+
+  void incdecheightocontainer(double containerheight) {
+    setState(() {
+      containerHeight = containerheight;
+    });
   }
 
   @override
@@ -97,6 +98,7 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
       pageviewlocationinfoTemp.add(
         PageViewLocationInfo(
           marker: marker,
+          incdecheightocontainer: incdecheightocontainer,
         ),
       );
       if (marker['_id'] == widget.id) {
@@ -116,18 +118,46 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
     //print(tempMarkers.length);
 
     //allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
+    // return Scaffold(
+    //   body: Column(
+    //     children: [
+    //       Expanded(
+    //         flex: 3,
+    //         child: GoogleMap(
+    //           mapType: MapType.normal,
+    //           myLocationEnabled: true,
+    //           initialCameraPosition: _kGooglePlex,
+    //           onMapCreated: (GoogleMapController controller) {
+    //             _controller.complete(controller);
+    //           },
+    //           markers: _markers,
+    //         ),
+    //       ),
+    //       Expanded(
+    //         flex: 1,
+    //         child: PageView(
+    //           onPageChanged: (changedPageNo) {
+    //             print(changedPageNo);
+    //             var latAndLng = Provider.of<AllData>(context, listen: false)
+    //                 .getMarkers[changedPageNo];
+    //             moveTheCamera(LatLng(
+    //               double.parse(latAndLng['location']['coordinates'][0]),
+    //               double.parse(latAndLng['location']['coordinates'][1]),
+    //             ));
+    //           },
+    //           controller: _pageviewcontroller,
+    //           children: pageviewlocationinfo,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('All Your Markers'),
-      ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            flex: 1,
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             child: GoogleMap(
               mapType: MapType.normal,
               myLocationEnabled: true,
@@ -138,22 +168,29 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
               markers: _markers,
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: PageView(
-              onPageChanged: (changedPageNo) {
-                print(changedPageNo);
-                var latAndLng = Provider.of<AllData>(context, listen: false)
-                    .getMarkers[changedPageNo];
-                moveTheCamera(LatLng(
-                  double.parse(latAndLng['location']['coordinates'][0]),
-                  double.parse(latAndLng['location']['coordinates'][1]),
-                ));
-              },
-              controller: _pageviewcontroller,
-              children: pageviewlocationinfo,
+          Positioned(
+            bottom: 0.0,
+            height: containerHeight,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: PageView.builder(
+                onPageChanged: (changedPageNo) {
+                  print(changedPageNo);
+                  var latAndLng = Provider.of<AllData>(context, listen: false)
+                      .getMarkers[changedPageNo];
+                  moveTheCamera(LatLng(
+                    double.parse(latAndLng['location']['coordinates'][0]),
+                    double.parse(latAndLng['location']['coordinates'][1]),
+                  ));
+                },
+                controller: _pageviewcontroller,
+                itemCount: pageviewlocationinfo.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return pageviewlocationinfo[index];
+                },
+              ),
             ),
-          ),
+          )
         ],
       ),
     );

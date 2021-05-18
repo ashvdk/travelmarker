@@ -23,7 +23,6 @@ class GoogleMapsState extends State<GoogleMaps> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.allMethodsandProperties['markers']);
     return GoogleMap(
       mapType: MapType.normal,
       myLocationEnabled: true,
