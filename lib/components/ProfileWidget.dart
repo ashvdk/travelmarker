@@ -21,7 +21,7 @@ class ProfileWidget extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 20.0),
-                Actor(size: 60.0),
+                Actor(size: 60.0, photoURL: user['photoURL']),
                 SizedBox(height: 20.0),
                 Text(
                   '${user['displayName']}',

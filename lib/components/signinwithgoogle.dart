@@ -50,8 +50,9 @@ class SignInWithGoogle extends StatelessWidget {
             splashColor: Colors.blueAccent,
             height: 80.0,
             onPressed: () {
-              setLoading();
+              setLoading("loading_selectaccountmessage");
               signInWithGoogle().then((value) async {
+                setLoading("loading_settingprofilemessage");
                 // await storage.write(key: "userregistered", value: "no");
                 // setUser();
                 var token =
@@ -68,7 +69,6 @@ class SignInWithGoogle extends StatelessWidget {
                   } else {
                     storage.write(key: "userregistered", value: "yes");
                   }
-                  setLoading();
                   setUser();
                 }
               });

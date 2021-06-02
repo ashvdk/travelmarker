@@ -19,4 +19,9 @@ class RestAPI {
           headers: {HttpHeaders.authorizationHeader: token});
     }
   }
+
+  Future delete(String apiURL, var token) async {
+    return await http.delete('$url$apiURL',
+        headers: {HttpHeaders.authorizationHeader: token});
+  }
 }

@@ -11,16 +11,16 @@ class UserRegisteration extends StatefulWidget {
 }
 
 class _UserRegisterationState extends State<UserRegisteration> {
-  var loading = false;
+  var loading = "loading_button";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
-  void setLoading() {
+  void setLoading(String message) {
     setState(() {
-      loading = !loading;
+      loading = message;
     });
   }
 
@@ -31,20 +31,22 @@ class _UserRegisterationState extends State<UserRegisteration> {
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: loading
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      backgroundColor: Colors.white,
+          child: loading == "loading_selectaccountmessage"
+              ? Text('Select your google account')
+              : loading == "loading_settingprofilemessage"
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                        Text('Setting up your profile....')
+                      ],
+                    )
+                  : SignInWithGoogle(
+                      setUser: widget.setUser,
+                      setLoading: setLoading,
                     ),
-                    Text('Setting up your profile....')
-                  ],
-                )
-              : SignInWithGoogle(
-                  setUser: widget.setUser,
-                  setLoading: setLoading,
-                ),
         ),
       ),
     );

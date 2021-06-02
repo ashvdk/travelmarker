@@ -5,6 +5,8 @@ import 'package:travelpointer/components/searchresultcomponent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:travelpointer/models/firebasedata.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
@@ -16,22 +18,19 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _searchtextfieldController;
   var usersList = [];
-  var token;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _searchtextfieldController = TextEditingController();
-    getToken();
-  }
-
-  void getToken() async {
-    token = await FirebaseAuth.instance.currentUser.getIdToken(true);
   }
 
   Future getTheUsersList(String username) async {
-    http.Response response =
-        await RestAPI().getTheRequest('searchusername/${username}', token);
+    var token = Provider.of<FirebaseData>(context, listen: false).token;
+    var uid = FirebaseAuth.instance.currentUser.uid;
+    http.Response response = await RestAPI()
+        .getTheRequest('searchusername?username=${username}&uid=${uid}', token);
     var users = jsonDecode(response.body)['result'];
     setState(() {
       usersList = [...users];
@@ -42,7 +41,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     print(usersList);
     return Scaffold(
-      backgroundColor: Color(0xFF05a859), //60992D,
+      //backgroundColor: Color(0xFF05a859), //60992D,
+      backgroundColor: Colors.black, //60992D,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -51,12 +51,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 top: 60.0, left: 30.0, bottom: 30.0, right: 30.0),
             child: Column(
               children: [
-                Text(
-                  'Search for people',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22.0,
-                    // fontWeight: FontWeight.bold,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Search for people',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -72,17 +75,21 @@ class _SearchScreenState extends State<SearchScreen> {
                       print(value);
                     },
                     decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                       fillColor: Colors.white,
                       filled: true,
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 2.0),
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                        //borderRadius: BorderRadius.circular(10.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 2.0),
-                        borderRadius: BorderRadius.circular(10.0),
+                        //borderSide: BorderSide(color: Colors.white, width: 2.0),
+                        borderSide: BorderSide(color: Colors.white),
+                        //borderRadius: BorderRadius.circular(10.0),
                       ),
+                      prefixIcon: Icon(CupertinoIcons.search),
                       suffixIcon: IconButton(
                         onPressed: () {
                           _searchtextfieldController.clear();
@@ -104,10 +111,10 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30.0),
-                  topRight: Radius.circular(30.0),
-                ),
+                // borderRadius: BorderRadius.only(
+                //   topLeft: Radius.circular(30.0),
+                //   topRight: Radius.circular(30.0),
+                // ),
               ),
               child: SearchResultComponent(
                 users: usersList,

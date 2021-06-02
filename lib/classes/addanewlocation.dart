@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'dart:ffi';
 
 class AddANewLocation extends ChangeNotifier {
   List _currentLocationData = [];

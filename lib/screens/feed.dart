@@ -25,8 +25,12 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     return Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Welcome to homepage'),
+          SizedBox(
+            height: 10.0,
+          ),
           FlatButton(
             color: Colors.redAccent,
             textColor: Colors.white,
