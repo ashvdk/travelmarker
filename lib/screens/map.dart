@@ -57,18 +57,18 @@ class MapSampleState extends State<MapSample> {
           icon: Provider.of<MarkerImage>(context, listen: true)
               .getMarkers(marker['category']),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MapWithMarkers(
-                  latlng: LatLng(
-                    double.parse(marker['location']['coordinates'][0]),
-                    double.parse(marker['location']['coordinates'][1]),
-                  ),
-                  id: marker["_id"],
-                ),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => MapWithMarkers(
+            //       latlng: LatLng(
+            //         double.parse(marker['location']['coordinates'][0]),
+            //         double.parse(marker['location']['coordinates'][1]),
+            //       ),
+            //       id: marker["_id"],
+            //     ),
+            //   ),
+            // );
           },
         ),
       );
@@ -80,14 +80,23 @@ class MapSampleState extends State<MapSample> {
     });
     allFunctionandMethods = {"_kGooglePlex": _kGooglePlex, "markers": _markers};
     return Container(
-      color: Color(0xFF05a859),
+      color: Colors.white,
       child: ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.0),
           topRight: Radius.circular(20.0),
         ),
-        child: GoogleMaps(
-          allMethodsandProperties: allFunctionandMethods,
+        child: GoogleMap(
+          mapType: MapType.normal,
+          myLocationEnabled: true,
+          initialCameraPosition: _kGooglePlex,
+          liteModeEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            Completer<GoogleMapController> _controller = Completer();
+            // controller.setMapStyle(_mapStyle);
+            _controller.complete(controller);
+          },
+          markers: _markers,
         ),
       ),
     );

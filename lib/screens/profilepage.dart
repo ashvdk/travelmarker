@@ -10,6 +10,7 @@ import 'package:travelpointer/models/userdetails.dart';
 import 'package:travelpointer/screens/addlocation.dart';
 import 'dart:convert';
 import 'package:travelpointer/classes/restapi.dart';
+import 'package:travelpointer/screens/addtrip.dart';
 
 class ProfilePage extends StatefulWidget {
   final String uid;
@@ -42,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => AddLocationNavigation(),
+                    builder: (BuildContext context) => AddTrip(),
                   ),
                 );
                 //Navigator.pushNamed(context, 'addanewlocation');

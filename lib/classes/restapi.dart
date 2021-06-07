@@ -5,10 +5,12 @@ import 'dart:convert';
 class RestAPI {
   //String url = "https://warm-dusk-84059.herokuapp.com/";
 
-  String url = "http://192.168.1.6:3000/";
+  String url = "http://192.168.1.6:8080/";
   Future postTheRequest(String apiURL, var body, var token) async {
-    return await http.post('$url$apiURL',
-        body: body, headers: {HttpHeaders.authorizationHeader: token});
+    return await http.post('$url$apiURL', body: body, headers: {
+      HttpHeaders.authorizationHeader: token,
+      HttpHeaders.contentTypeHeader: "application/json"
+    });
   }
 
   Future getTheRequest(String apiURL, var token) async {

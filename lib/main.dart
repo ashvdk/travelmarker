@@ -44,6 +44,7 @@ class MyAPP extends StatelessWidget {
       //FirebaseData
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(fontFamily: 'Quicksand'),
         home: LoginCheck(),
       ),
     );

@@ -8,7 +8,9 @@ import 'package:travelpointer/models/firebasedata.dart';
 
 class UserFollowButtonComponent extends StatefulWidget {
   final Map user;
-  const UserFollowButtonComponent({Key key, this.user}) : super(key: key);
+  final Function addrelationship;
+  const UserFollowButtonComponent({Key key, this.user, this.addrelationship})
+      : super(key: key);
 
   @override
   _UserFollowButtonComponentState createState() =>
@@ -47,12 +49,14 @@ class _UserFollowButtonComponentState extends State<UserFollowButtonComponent> {
       var result = jsonDecode(response.body);
       relationshipMessage = "Following";
       relationship_id = result['result'];
+      widget.addrelationship(relationship_id);
     } else {
       setState(() {
         loading = false;
         relationshipMessage = "Follow";
         relationship_id = "";
       });
+      widget.addrelationship(null);
     }
   }
 
@@ -60,10 +64,10 @@ class _UserFollowButtonComponentState extends State<UserFollowButtonComponent> {
     setState(() {
       loading = true;
     });
-    var body = {
+    var body = jsonEncode({
       "uid": FirebaseAuth.instance.currentUser.uid,
       "followerid": widget.user['_id']
-    };
+    });
     var token = Provider.of<FirebaseData>(context, listen: false).token;
     http.Response response =
         await RestAPI().postTheRequest('user/addfollowing', body, token);
@@ -74,6 +78,7 @@ class _UserFollowButtonComponentState extends State<UserFollowButtonComponent> {
       var result = jsonDecode(response.body);
       relationshipMessage = "Following";
       relationship_id = result['result'];
+      widget.addrelationship(relationship_id);
     }
   }
 
@@ -155,7 +160,7 @@ class _UserFollowButtonComponentState extends State<UserFollowButtonComponent> {
                                         relationshipMessage = "Follow";
                                         relationship_id = "";
                                       });
-
+                                      widget.addrelationship(null);
                                       Navigator.pop(context);
                                     }
                                   },

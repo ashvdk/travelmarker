@@ -18,6 +18,8 @@ import 'package:travelpointer/screens/locationsearch.dart';
 import 'package:travelpointer/screens/selectcategory.dart';
 
 class AddaNewLocation extends StatefulWidget {
+  final Function addlocation;
+  AddaNewLocation({this.addlocation});
   @override
   _AddaNewLocationState createState() => _AddaNewLocationState();
 }
@@ -63,30 +65,32 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
     Provider.of<AddANewLocation>(context, listen: false)
         .setTitleDescription(title, description);
 
-    var token = await FirebaseAuth.instance.currentUser.getIdToken(true);
-    var uid = FirebaseAuth.instance.currentUser.uid;
+    // var token = await FirebaseAuth.instance.currentUser.getIdToken(true);
+    // var uid = FirebaseAuth.instance.currentUser.uid;
     var body =
         Provider.of<AddANewLocation>(context, listen: false).newLocationInfo;
-    http.Response response =
-        await RestAPI().postTheRequest('user/$uid/location', body, token);
-    if (response.statusCode == 200) {
-      var userlocation = jsonDecode(response.body);
-      print(userlocation['result'][0]['_id']);
-      print(userlocation['result'][0]['location']['coordinates']);
-      Provider.of<AllData>(context, listen: false)
-          .setanotherMarker(userlocation['result']);
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          'showthelocations', (Route<dynamic> route) => false,
-          arguments: {
-            'latlang': LatLng(
-              double.parse(
-                  userlocation['result'][0]['location']['coordinates'][0]),
-              double.parse(
-                  userlocation['result'][0]['location']['coordinates'][1]),
-            ),
-            'id': userlocation['result'][0]['_id']
-          });
-    }
+    widget.addlocation(body);
+    Navigator.pop(context);
+    // http.Response response =
+    //     await RestAPI().postTheRequest('user/$uid/location', body, token);
+    // if (response.statusCode == 200) {
+    //   var userlocation = jsonDecode(response.body);
+    //   print(userlocation['result'][0]['_id']);
+    //   print(userlocation['result'][0]['location']['coordinates']);
+    //   Provider.of<AllData>(context, listen: false)
+    //       .setanotherMarker(userlocation['result']);
+    //   Navigator.of(context).pushNamedAndRemoveUntil(
+    //       'showthelocations', (Route<dynamic> route) => false,
+    //       arguments: {
+    //         'latlang': LatLng(
+    //           double.parse(
+    //               userlocation['result'][0]['location']['coordinates'][0]),
+    //           double.parse(
+    //               userlocation['result'][0]['location']['coordinates'][1]),
+    //         ),
+    //         'id': userlocation['result'][0]['_id']
+    //       });
+    // }
   }
 
   @override

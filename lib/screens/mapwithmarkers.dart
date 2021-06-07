@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,13 +10,10 @@ import 'package:travelpointer/models/alldata.dart';
 import 'package:travelpointer/models/markerimage.dart';
 
 class MapWithMarkers extends StatefulWidget {
-  final LatLng latlng;
-  final String id;
-  // final double lat;
-  // final double lng;
-  // final String city;
-  // final BitmapDescriptor myIcon;
-  const MapWithMarkers({Key key, this.latlng, this.id}) : super(key: key);
+  // final LatLng latlng;
+  // final String id;
+  final List alllocations;
+  const MapWithMarkers({Key key, this.alllocations}) : super(key: key);
   @override
   _MapWithMarkersState createState() => _MapWithMarkersState();
 }
@@ -49,7 +47,9 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
         myIcon = onValue;
       });
     });
-    moveTheCamera(widget.latlng);
+    print("came to init");
+
+    //moveTheCamera(widget.latlng);
   }
 
   void incdecheightocontainer(double containerheight) {
@@ -66,32 +66,32 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
       zoom: 5,
     );
 
-    var allMarkers = Provider.of<AllData>(context).getMarkers;
     Set<Marker> tempMarkers = {};
     var i = 0;
     List<Widget> pageviewlocationinfoTemp = [];
-    for (var marker in allMarkers) {
+    for (var marker in widget.alllocations) {
       int setPageNo = i;
-      //print(marker["_id"]);
+      var coOrdinates = marker['coordinates'].split(", ");
+      var lat = coOrdinates[0];
+      var lng = coOrdinates[1];
+
       tempMarkers.add(
         Marker(
-          // This marker id can be anything that uniquely identifies each marker.
           markerId: MarkerId("$i"),
           position: LatLng(
-            double.parse(marker['location']['coordinates'][0]),
-            double.parse(marker['location']['coordinates'][1]),
+            double.parse(lat),
+            double.parse(lng),
           ),
+          infoWindow: InfoWindow(title: marker['name']),
           icon: Provider.of<MarkerImage>(context, listen: true)
               .getMarkers(marker['category']),
           onTap: () {
             print(setPageNo);
-            _pageviewcontroller.animateToPage(setPageNo,
-                duration: Duration(milliseconds: 250),
-                curve: Curves.bounceInOut);
-            // setState(() {
-            //   pageNumber = setPageNo;
-            // });
-            //print(setPageNo);
+            // _pageviewcontroller.animateToPage(
+            //   setPageNo,
+            //   duration: Duration(milliseconds: 250),
+            //   curve: Curves.bounceInOut,
+            // );
           },
         ),
       );
@@ -101,13 +101,11 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
           incdecheightocontainer: incdecheightocontainer,
         ),
       );
-      if (marker['_id'] == widget.id) {
-        pageNumber = setPageNo;
-      }
+
       i++;
     }
 
-    print(pageviewlocationinfoTemp.length);
+    // print(pageviewlocationinfoTemp.length); from here
     setState(() {
       _markers = {...tempMarkers};
       pageviewlocationinfo = [...pageviewlocationinfoTemp];
@@ -174,14 +172,17 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
             child: Container(
               width: MediaQuery.of(context).size.width,
               child: PageView.builder(
-                onPageChanged: (changedPageNo) {
+                onPageChanged: (changedPageNo) async {
                   print(changedPageNo);
-                  var latAndLng = Provider.of<AllData>(context, listen: false)
-                      .getMarkers[changedPageNo];
-                  moveTheCamera(LatLng(
-                    double.parse(latAndLng['location']['coordinates'][0]),
-                    double.parse(latAndLng['location']['coordinates'][1]),
-                  ));
+                  final GoogleMapController controller =
+                      await _controller.future;
+                  controller.showMarkerInfoWindow(MarkerId("$changedPageNo"));
+                  // var latAndLng = Provider.of<AllData>(context, listen: false)
+                  //     .getMarkers[changedPageNo];
+                  // moveTheCamera(LatLng(
+                  //   double.parse(latAndLng['location']['coordinates'][0]),
+                  //   double.parse(latAndLng['location']['coordinates'][1]),
+                  // ));
                 },
                 controller: _pageviewcontroller,
                 itemCount: pageviewlocationinfo.length,

@@ -11,13 +11,16 @@ class ProfileInfo extends StatelessWidget {
         Text(
           '25',
           style: TextStyle(
-              fontSize: 25.0, fontWeight: FontWeight.w600, color: Colors.white),
+            fontSize: 17.0,
+            fontWeight: FontWeight.w600,
+            // color: Colors.white,
+          ),
         ),
         Text(
           '$title',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
+            color: Colors.black38,
+            fontSize: 10.0,
           ),
         )
       ],
