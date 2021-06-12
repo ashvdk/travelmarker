@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:travelpointer/components/actor.dart';
 import 'package:travelpointer/screens/activityscreen.dart';
+import 'package:travelpointer/screens/chatscreen.dart';
 import 'package:travelpointer/screens/planningscreen.dart';
 import 'package:travelpointer/screens/profilepage.dart';
 import 'package:travelpointer/screens/feed.dart';
@@ -41,6 +42,8 @@ class _HomePageState extends State<HomePage> {
         return ActivityScreen();
         break;
       case 4:
+        return ChatScreen();
+      case 5:
         return ProfilePage(
           uid: FirebaseAuth.instance.currentUser.uid,
         );
@@ -80,6 +83,10 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.supervisor_account_sharp),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
             label: '',
           ),
           BottomNavigationBarItem(
