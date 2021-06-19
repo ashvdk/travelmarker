@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:travelpointer/classes/restapi.dart';
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddUsernameScreen extends StatefulWidget {
@@ -17,13 +16,16 @@ class AddUsernameScreen extends StatefulWidget {
 class _AddUsernameScreenState extends State<AddUsernameScreen> {
   //final storage = new FlutterSecureStorage();
   TextEditingController _usernametexfieldController;
+  TextEditingController _nametexfieldController;
   bool showLoading = false;
   String _validateUsername;
+  String _validatename;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _usernametexfieldController = TextEditingController();
+    _nametexfieldController = TextEditingController();
   }
 
   @override
@@ -39,27 +41,40 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Choose your username',
+                    //'Choose your username',
+                    'Details',
                     style: TextStyle(fontSize: 35.0),
                   ),
                 ),
                 SizedBox(
-                  height: 5.0,
+                  height: 20.0,
+                ),
+                FirebaseAuth.instance.currentUser.displayName == null
+                    ? TextField(
+                        controller: _nametexfieldController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Name (required)',
+                          errorText: _validatename == "NO_NAME"
+                              ? "Name cannot be empty"
+                              : null,
+                        ),
+                      )
+                    : Container(),
+                SizedBox(
+                  height: 30.0,
                 ),
                 TextField(
-                  cursorHeight: 40.0,
-                  style: TextStyle(fontSize: 23.0),
                   controller: _usernametexfieldController,
                   decoration: InputDecoration(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    border: UnderlineInputBorder(),
+                    border: OutlineInputBorder(),
+                    labelText: 'Username (required)',
                     errorText: _validateUsername == "NO_USERNAME"
                         ? "Please enter your username"
                         : _validateUsername == "USERNAME_SHORT"
                             ? "Username should more the 5 letters"
                             : _validateUsername == "USERNAME_EXISTS"
-                                ? "Username already exisits"
+                                ? "Username already exists"
                                 : null,
                   ),
                 ),
@@ -82,10 +97,19 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                       } else {
                         setState(() {
                           _validateUsername = "USERNAME_OK";
-                          showLoading = true;
                         });
                       }
                     }
+                    if (_nametexfieldController.text.isEmpty) {
+                      setState(() {
+                        _validatename = "NO_NAME";
+                      });
+                      return;
+                    }
+                    setState(() {
+                      _validatename = "NAME_OK";
+                      showLoading = true;
+                    });
                     var token = await FirebaseAuth.instance.currentUser
                         .getIdToken(true);
                     var value = FirebaseAuth.instance.currentUser;
@@ -94,7 +118,9 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                     var body = jsonEncode({
                       "uid": value.uid,
                       "email": value.email,
-                      "displayName": value.displayName,
+                      "displayName": value.displayName == null
+                          ? _nametexfieldController.text
+                          : value.displayName,
                       "username": _usernametexfieldController.text,
                       "photoURL": value.photoURL
                     });

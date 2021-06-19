@@ -125,7 +125,9 @@ class _UserRegisterationState extends State<UserRegisteration> {
                         ),
                         Container(
                           child: SigninWithUsernameandPassword(
-                              chooseloginorcreate: chooseloginorcreate),
+                            chooseloginorcreate: chooseloginorcreate,
+                            setUser: widget.setUser,
+                          ),
                         ),
                         Expanded(flex: 1, child: Container()),
                       ],
