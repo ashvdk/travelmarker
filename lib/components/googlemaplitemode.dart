@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:travelpointer/models/markerimage.dart';
 
 class GoogleMapLiteMode extends StatefulWidget {
-  final String coordinates;
-  GoogleMapLiteMode({this.coordinates});
+  final List location;
+  final double optimalZoom;
+  final List optimalCoordinates;
+  GoogleMapLiteMode({this.location, this.optimalZoom, this.optimalCoordinates});
   @override
   _GoogleMapLiteModeState createState() => _GoogleMapLiteModeState();
 }
@@ -19,38 +23,57 @@ class _GoogleMapLiteModeState extends State<GoogleMapLiteMode> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _goToTheLocation();
+    //_goToTheLocation();
   }
 
-  Future<void> _goToTheLocation() async {
-    if (widget.coordinates != null) {
-      lat = widget.coordinates.split(",")[0];
-      lng = widget.coordinates.split(",")[1];
-      _markers.add(
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId("dbgdfgbdf"),
-          position: LatLng(
-            double.parse(lat),
-            double.parse(lng),
-          ),
-        ),
-      );
-    } else {}
-  }
+  // Future<void> _goToTheLocation() async {
+  //   if (widget.coordinates != null) {
+  //     lat = widget.coordinates.split(",")[0];
+  //     lng = widget.coordinates.split(",")[1];
+  //     _markers.add(
+  //       Marker(
+  //         // This marker id can be anything that uniquely identifies each marker.
+  //         markerId: MarkerId("dbgdfgbdf"),
+  //         position: LatLng(
+  //           double.parse(lat),
+  //           double.parse(lng),
+  //         ),
+  //       ),
+  //     );
+  //   } else {}
+  // }
 
   @override
   Widget build(BuildContext context) {
-    LatLng _center;
-    if (widget.coordinates != null) {
-      _center = new LatLng(double.parse(lat), double.parse(lng));
-    } else {
-      _center = new LatLng(22.5937, 78.9629);
-    }
+    final LatLng _center =
+        LatLng(widget.optimalCoordinates[0], widget.optimalCoordinates[1]);
     final CameraPosition _kGooglePlex = CameraPosition(
       target: _center,
-      zoom: widget.coordinates != null ? 17.00 : 5.00,
+      zoom: widget.optimalZoom,
     );
+    Set<Marker> tempMarkers = {};
+    var i = 0;
+    for (var marker in widget.location) {
+      var coOrdinates = marker['coordinates'].split(", ");
+      var lat = coOrdinates[0];
+      var lng = coOrdinates[1];
+
+      tempMarkers.add(
+        Marker(
+            markerId: MarkerId("$i"),
+            position: LatLng(
+              double.parse(lat),
+              double.parse(lng),
+            ),
+            infoWindow: InfoWindow(title: marker['name']),
+            icon: Provider.of<MarkerImage>(context, listen: true)
+                .getMarkers(marker['category'])),
+      );
+      i++;
+    }
+    setState(() {
+      _markers = {...tempMarkers};
+    });
     return GoogleMap(
       mapType: MapType.normal,
       myLocationEnabled: true,

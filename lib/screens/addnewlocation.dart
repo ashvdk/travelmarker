@@ -28,11 +28,15 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
   Completer<GoogleMapController> _controller = Completer();
   AddANewLocation newlocationdata = AddANewLocation();
   var stepperForm = "collect_map_coordinates";
+  var zoom = null;
+  TextEditingController _nameoftheplacetexfieldController;
+  TextEditingController _descriptionoftheplacetexfieldController;
 
   @override
   void initState() {
     super.initState();
-
+    _nameoftheplacetexfieldController = TextEditingController();
+    _descriptionoftheplacetexfieldController = TextEditingController();
     _goToTheLake();
   }
 
@@ -50,26 +54,37 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
 
   void _onCameraMove(CameraPosition position) {
     _lastMapPosition = position.target;
+    setState(() {
+      zoom = position.zoom;
+    });
   }
 
-  var category;
+  var category = null;
   void setCategory(String categoryType) {
     setState(() {
       category = categoryType;
     });
   }
 
-  String title = "";
-  String description = "";
+  bool titleerror = false;
+  bool descriptionerror = false;
   void saveTheNewLocation() async {
-    Provider.of<AddANewLocation>(context, listen: false)
-        .setTitleDescription(title, description);
+    Provider.of<AddANewLocation>(context, listen: false).setTitleDescription(
+        _nameoftheplacetexfieldController.text,
+        _descriptionoftheplacetexfieldController.text);
 
     // var token = await FirebaseAuth.instance.currentUser.getIdToken(true);
     // var uid = FirebaseAuth.instance.currentUser.uid;
     var body =
         Provider.of<AddANewLocation>(context, listen: false).newLocationInfo;
-    widget.addlocation(body);
+    widget.addlocation({
+      ...body,
+      'optimalZoom': zoom,
+      'optimalCoordinates': [
+        _lastMapPosition.latitude,
+        _lastMapPosition.longitude,
+      ]
+    });
     Navigator.pop(context);
     // http.Response response =
     //     await RestAPI().postTheRequest('user/$uid/location', body, token);
@@ -182,199 +197,239 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
           ],
         );
       } else if (stepperForm == "select_category") {
-        return Column(
-          children: [
-            SizedBox(
-              height: 20.0,
-            ),
-            Expanded(
-              child: Wrap(
-                spacing: 20.0,
-                runSpacing: 20.0,
-                children: [
-                  CategoriesWithIcons(
-                    geticons: Icons.agriculture,
-                    title: 'Agriculture',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.ev_station_rounded,
-                    title: 'EV Station',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.electric_scooter,
-                    title: 'Electric Scooter',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.local_grocery_store_outlined,
-                    title: 'Shopping',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.bike_scooter,
-                    title: 'Rent Bikes',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.waves,
-                    title: 'Beach',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.terrain,
-                    title: 'Terrain',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.agriculture,
-                    title: 'Agriculture',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.agriculture,
-                    title: 'Agriculture',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.agriculture,
-                    title: 'Agriculture',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                  CategoriesWithIcons(
-                    geticons: Icons.agriculture,
-                    title: 'Agriculture',
-                    setCategoryFunc: setCategory,
-                    category: category,
-                  ),
-                ],
+        return Padding(
+          padding: EdgeInsets.only(left: 16, right: 16, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Category",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: FlatButton(
-                    color: Colors.lightBlueAccent,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-                    splashColor: Colors.blueAccent,
-                    height: 50.0,
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(fontSize: 13.0),
+              Divider(),
+              SizedBox(
+                height: 30.0,
+              ),
+              Expanded(
+                child: Wrap(
+                  spacing: 20.0,
+                  runSpacing: 20.0,
+                  children: [
+                    CategoriesWithIcons(
+                      geticons: Icons.agriculture,
+                      title: 'Agriculture',
+                      setCategoryFunc: setCategory,
+                      category: category,
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: FlatButton(
-                    color: Colors.green,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-                    splashColor: Colors.blueAccent,
-                    height: 50.0,
-                    onPressed: () {
-                      Provider.of<AddANewLocation>(context, listen: false)
-                          .setCategory(category);
-                      setState(() {
-                        stepperForm = "add_description";
-                      });
-                      // Navigator.of(context)
-                      //     .pushNamed('adddescriptionaboutthelocation');
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (BuildContext context) =>
-                      //         AddDescriptionAboutTheLocation(),
-                      //   ),
-                      // );
-                    },
-                    child: Text(
-                      'Next',
-                      style: TextStyle(fontSize: 13.0),
+                    CategoriesWithIcons(
+                      geticons: Icons.ev_station_rounded,
+                      title: 'EV Station',
+                      setCategoryFunc: setCategory,
+                      category: category,
                     ),
-                  ),
+                    CategoriesWithIcons(
+                      geticons: Icons.electric_scooter,
+                      title: 'Electric Scooter',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.local_grocery_store_outlined,
+                      title: 'Shopping',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.bike_scooter,
+                      title: 'Rent Bikes',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.waves,
+                      title: 'Beach',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.terrain,
+                      title: 'Terrain',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.agriculture,
+                      title: 'Agriculture',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.agriculture,
+                      title: 'Agriculture',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.agriculture,
+                      title: 'Agriculture',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                    CategoriesWithIcons(
+                      geticons: Icons.agriculture,
+                      title: 'Agriculture',
+                      setCategoryFunc: setCategory,
+                      category: category,
+                    ),
+                  ],
                 ),
-              ],
-            )
-          ],
+              ),
+              category == null
+                  ? Container(
+                      child: Center(
+                        child: Text(
+                          'Please choose a category',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      color: Color(0xFFff6666),
+                      width: MediaQuery.of(context).size.width,
+                      height: 50.0,
+                    )
+                  : Text(""),
+              SizedBox(
+                height: 10.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 5.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          minimumSize:
+                              Size(MediaQuery.of(context).size.width, 60),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        child: Text(
+                          'Next',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          if (category == null) {
+                          } else {
+                            Provider.of<AddANewLocation>(context, listen: false)
+                                .setCategory(category);
+                            setState(() {
+                              stepperForm = "add_description";
+                            });
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          minimumSize:
+                              Size(MediaQuery.of(context).size.width, 60),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                          backgroundColor: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         );
       } else if (stepperForm == "add_description") {
         return Container(
           padding: EdgeInsets.only(left: 10.0, right: 10.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 40.0,
+              Text(
+                "Description",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              Center(
+              Divider(),
+              SizedBox(
+                height: 30.0,
+              ),
+              TextField(
+                controller: _nameoftheplacetexfieldController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Name of the place (required)',
+                  errorText: titleerror ? "Cannot be empty" : null,
+                ),
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TextField(
+                controller: _descriptionoftheplacetexfieldController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Description of the place (required)',
+                  errorText: descriptionerror ? "Cannot be empty" : null,
+                ),
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TextButton(
                 child: Text(
-                  'Description about the place',
-                  style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+                  'Save the location',
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              TextField(
-                onChanged: (String value) {
-                  title = value;
-                  // newlocationdata.title = value;
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Title',
-                ),
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              TextField(
-                maxLines: 5,
-                onChanged: (String value) {
-                  description = value;
-                  // newlocationdata.description = value;
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Description',
-                ),
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              FlatButton(
-                color: Colors.green,
-                textColor: Colors.white,
-                disabledColor: Colors.grey,
-                disabledTextColor: Colors.black,
-                splashColor: Colors.blueAccent,
-                height: 50.0,
                 onPressed: () {
+                  if (_nameoftheplacetexfieldController.text.isEmpty) {
+                    setState(() {
+                      titleerror = true;
+                    });
+                    return;
+                  }
+                  if (_descriptionoftheplacetexfieldController.text.isEmpty) {
+                    setState(() {
+                      descriptionerror = true;
+                    });
+                    return;
+                  }
+                  setState(() {
+                    titleerror = false;
+                    descriptionerror = false;
+                  });
                   saveTheNewLocation();
                 },
-                child: Text(
-                  'Next',
-                  style: TextStyle(fontSize: 13.0),
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  minimumSize: Size(MediaQuery.of(context).size.width, 60),
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
+                  backgroundColor: Colors.blue,
                 ),
-              )
+              ),
             ],
           ),
         );
@@ -382,26 +437,26 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF05a859),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('Add a new location'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            // onPressed: () {
-            //   showSearch(
-            //     context: context,
-            //     delegate: LocationSearch(),
-            //   );
-            // },
-          ),
-        ],
-      ),
-      body: selectedElements(),
+      // appBar: AppBar(
+      //   backgroundColor: Color(0xFF05a859),
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      //   title: Text('Add a new location'),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       icon: Icon(Icons.search),
+      //       onPressed: () {
+      //         showSearch(
+      //           context: context,
+      //           delegate: LocationSearch(),
+      //         );
+      //       },
+      //     ),
+      //   ],
+      // ),
+      body: SafeArea(child: selectedElements()),
       floatingActionButton: stepperForm == "collect_map_coordinates"
           ? FloatingActionButton(
               onPressed: () => _goToTheLake(),

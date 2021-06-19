@@ -81,7 +81,13 @@ class _LocationListViewState extends State<LocationListView> {
                             Container(
                               // width: MediaQuery.of(context).size.width - 50.0,
                               height: 100.0,
-                              child: GoogleMapLiteMode(coordinates: null),
+                              child: GoogleMapLiteMode(
+                                location: widget.location[index]['locations'],
+                                optimalZoom: widget.location[index]
+                                    ['optimalZoom'],
+                                optimalCoordinates: widget.location[index]
+                                    ['optimalCoordinates'],
+                              ),
                             ),
                             GestureDetector(
                               onTap: () {

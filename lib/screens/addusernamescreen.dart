@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:travelpointer/classes/restapi.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddUsernameScreen extends StatefulWidget {
   final Function setUser;
@@ -14,7 +15,7 @@ class AddUsernameScreen extends StatefulWidget {
 }
 
 class _AddUsernameScreenState extends State<AddUsernameScreen> {
-  final storage = new FlutterSecureStorage();
+  //final storage = new FlutterSecureStorage();
   TextEditingController _usernametexfieldController;
   bool showLoading = false;
   String _validateUsername;
@@ -88,19 +89,22 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                     var token = await FirebaseAuth.instance.currentUser
                         .getIdToken(true);
                     var value = FirebaseAuth.instance.currentUser;
-                    var body = {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var body = jsonEncode({
                       "uid": value.uid,
                       "email": value.email,
                       "displayName": value.displayName,
                       "username": _usernametexfieldController.text,
                       "photoURL": value.photoURL
-                    };
+                    });
 
                     http.Response response =
                         await RestAPI().postTheRequest('user', body, token);
 
                     if (response.statusCode == 200) {
-                      storage.write(key: "userregistered", value: "yes");
+                      prefs.setString('userregistered', "yes");
+                      //storage.write(key: "userregistered", value: "yes");
                       widget.setUser();
                     } else {
                       //print("wrong username");

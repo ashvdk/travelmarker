@@ -13,7 +13,9 @@ class MapWithMarkers extends StatefulWidget {
   // final LatLng latlng;
   // final String id;
   final List alllocations;
-  const MapWithMarkers({Key key, this.alllocations}) : super(key: key);
+  final Function setSettings;
+  const MapWithMarkers({Key key, this.alllocations, this.setSettings})
+      : super(key: key);
   @override
   _MapWithMarkersState createState() => _MapWithMarkersState();
 }
@@ -56,6 +58,17 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
     setState(() {
       containerHeight = containerheight;
     });
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    widget.setSettings(
+        position.zoom, [position.target.latitude, position.target.longitude]);
+    // _lastMapPosition = position.target;
+    // _lastMapPosition.latitude,
+    // _lastMapPosition.longitude,
+    // setState(() {
+    //   zoom = position.zoom;
+    // });
   }
 
   @override
@@ -163,6 +176,7 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
+              onCameraMove: _onCameraMove,
               markers: _markers,
             ),
           ),

@@ -8,6 +8,7 @@ import 'package:travelpointer/screens/addnewlocation.dart';
 import 'dart:convert';
 import 'package:travelpointer/classes/restapi.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:travelpointer/screens/mapwithmarkers.dart';
 
 class AddTrip extends StatefulWidget {
   @override
@@ -19,6 +20,15 @@ class _AddTripState extends State<AddTrip> {
   var locations = [];
   var errorcheck = false;
   var loading = false;
+  var optimalZoom = null;
+  var optimalCoordinates = null;
+  void setSettings(double zoom, List coordinates) {
+    setState(() {
+      optimalZoom = zoom;
+      optimalCoordinates = coordinates;
+    });
+  }
+
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -29,7 +39,6 @@ class _AddTripState extends State<AddTrip> {
     setState(() {
       locations = [...locations, location];
     });
-    print(locations);
   }
 
   void deleteonelocation(int index) {
@@ -43,6 +52,22 @@ class _AddTripState extends State<AddTrip> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: locations.length >= 1
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => MapWithMarkers(
+                      alllocations: locations,
+                      setSettings: setSettings,
+                    ),
+                  ),
+                );
+              },
+              child: Icon(Icons.remove_red_eye_sharp),
+            )
+          : null,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -69,9 +94,12 @@ class _AddTripState extends State<AddTrip> {
                       });
                       var body = jsonEncode({
                         'caption': _captiontexfieldController.text,
-                        'locations': locations
+                        'locations': locations,
+                        'optimalCoordinates': optimalCoordinates,
+                        'optimalZoom': optimalZoom
                       });
-
+                      // print(optimalCoordinates);
+                      // print(optimalZoom);
                       var token =
                           Provider.of<FirebaseData>(context, listen: false)
                               .token;
@@ -120,6 +148,21 @@ class _AddTripState extends State<AddTrip> {
                               errorcheck ? "Please provide the caption" : null,
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Container(
+                      child: Center(
+                        child: Text(
+                          'Choose an optimal zoom by clicking on the eye icon in the bottom right corner of the screen',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      color: Color(0xFFff6666),
+                      width: MediaQuery.of(context).size.width,
+                      height: 50.0,
                     ),
                     SizedBox(
                       height: 20.0,

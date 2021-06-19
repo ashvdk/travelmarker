@@ -48,78 +48,76 @@ class _ClubScreenState extends State<ClubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: loading
-            ? Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 60,
-                  height: 60,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Your clubs",
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Your clubs",
-                        style: TextStyle(
-                            fontSize: 32, fontWeight: FontWeight.bold),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  AddNewClubScreen(
-                                addClubs: addClubs,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              left: 8, right: 8, top: 2, bottom: 2),
-                          height: 30,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.pink[50],
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.add,
-                                color: Colors.pink,
-                                size: 20,
-                              ),
-                              SizedBox(
-                                width: 2,
-                              ),
-                              Text(
-                                "Add New",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => AddNewClubScreen(
+                          addClubs: addClubs,
                         ),
-                      )
-                    ],
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.pink[50],
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.add,
+                          color: Colors.pink,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text(
+                          "Add New",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
-                  Divider(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Expanded(
+                )
+              ],
+            ),
+            Divider(),
+            SizedBox(
+              height: 20.0,
+            ),
+            loading
+                ? Center(
+                    child: SizedBox(
+                      child: CircularProgressIndicator(),
+                      width: 60,
+                      height: 60,
+                    ),
+                  )
+                : Expanded(
                     flex: 1,
                     child: ClubListComponent(
                       clubs: clubs,
                     ),
                   )
-                ],
-              ),
+          ],
+        ),
       ),
     );
   }

@@ -11,6 +11,8 @@ import 'package:travelpointer/screens/userregisteration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 final storage = new FlutterSecureStorage();
 
@@ -64,13 +66,24 @@ class _LoginCheckState extends State<LoginCheck> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    setUser();
+  }
+
+  Future<void> signOutGoogle() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userregistered');
     setUser();
   }
 
   void setUser() async {
-    String user_registered = await storage.read(key: "userregistered");
+    // String user_registered = await storage.read(key: "userregistered");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_registered = prefs.getString('userregistered');
     print("Checking user registeration value");
-
+    print(user_registered);
     setState(() {
       user = FirebaseAuth.instance.currentUser;
       userregistered = user_registered;
@@ -87,6 +100,13 @@ class _LoginCheckState extends State<LoginCheck> {
       if (userregistered == "no") {
         return AddUsernameScreen(
           setUser: setUser,
+        );
+      } else if (userregistered == "error") {
+        signOutGoogle();
+        return Container(
+          color: Colors.white,
+          width: 0.0,
+          height: 0.0,
         );
       } else {
         return HomePage(setUser: setUser);

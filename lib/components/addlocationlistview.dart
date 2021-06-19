@@ -26,7 +26,10 @@ class _AddLocationListViewState extends State<AddLocationListView> {
                   // width: MediaQuery.of(context).size.width - 50.0,
                   height: 100.0,
                   child: GoogleMapLiteMode(
-                    coordinates: widget.locations[index]['coordinates'],
+                    location: [widget.locations[index]],
+                    optimalZoom: widget.locations[index]['optimalZoom'],
+                    optimalCoordinates: widget.locations[index]
+                        ['optimalCoordinates'],
                   ),
                 ),
                 Container(
@@ -54,7 +57,7 @@ class _AddLocationListViewState extends State<AddLocationListView> {
                         widget.deleteonelocation(i);
                       },
                       child: Text(
-                        'Close',
+                        'Remove this location',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.red,

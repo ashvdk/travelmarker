@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInWithGoogle extends StatelessWidget {
   final storage = new FlutterSecureStorage();
@@ -49,8 +50,10 @@ class SignInWithGoogle extends StatelessWidget {
             disabledTextColor: Colors.black,
             splashColor: Colors.blueAccent,
             height: 80.0,
-            onPressed: () {
+            onPressed: () async {
               setLoading("loading_selectaccountmessage");
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString('userregistered', "error");
               signInWithGoogle().then((value) async {
                 setLoading("loading_settingprofilemessage");
                 // await storage.write(key: "userregistered", value: "no");
@@ -59,17 +62,24 @@ class SignInWithGoogle extends StatelessWidget {
                     await FirebaseAuth.instance.currentUser.getIdToken(true);
                 var value = FirebaseAuth.instance.currentUser;
 
-                http.Response response = await RestAPI()
-                    .getTheRequest('getuserdetails/${value.uid}', token);
+                try {
+                  http.Response response = await RestAPI()
+                      .getTheRequest('getuserdetails/${value.uid}', token);
 
-                if (response.statusCode == 200) {
-                  var checkusername = jsonDecode(response.body);
-                  if (checkusername['message'] == "NO_USERNAME_FOUND") {
-                    storage.write(key: "userregistered", value: "no");
-                  } else {
-                    storage.write(key: "userregistered", value: "yes");
+                  if (response.statusCode == 200) {
+                    var checkusername = jsonDecode(response.body);
+                    if (checkusername['message'] == "NO_USERNAME_FOUND") {
+                      prefs.setString('userregistered', "no");
+                      //storage.write(key: "userregistered", value: "no");
+                    } else {
+                      prefs.setString('userregistered', "yes");
+                      //storage.write(key: "userregistered", value: "yes");
+                    }
+                    setUser();
                   }
-                  setUser();
+                } catch (e) {
+                  signOutGoogle();
+                  setLoading("loading_button");
                 }
               });
             },

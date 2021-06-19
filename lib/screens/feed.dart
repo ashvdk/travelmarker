@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FeedScreen extends StatefulWidget {
   final Function setUser;
@@ -17,7 +18,8 @@ class _FeedScreenState extends State<FeedScreen> {
   Future<void> signOutGoogle() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
-    await storage.deleteAll();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userregistered');
     widget.setUser();
   }
 
