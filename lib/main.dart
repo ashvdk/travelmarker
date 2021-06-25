@@ -101,7 +101,7 @@ class _LoginCheckState extends State<LoginCheck> {
         return AddUsernameScreen(
           setUser: setUser,
         );
-      } else if (userregistered == "error") {
+      } else if (userregistered == "error" || userregistered == null) {
         signOutGoogle();
         return Container(
           color: Colors.white,

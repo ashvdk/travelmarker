@@ -61,8 +61,11 @@ class _MapWithMarkersState extends State<MapWithMarkers> {
   }
 
   void _onCameraMove(CameraPosition position) {
-    widget.setSettings(
-        position.zoom, [position.target.latitude, position.target.longitude]);
+    if (widget.setSettings != null) {
+      widget.setSettings(
+          position.zoom, [position.target.latitude, position.target.longitude]);
+    }
+
     // _lastMapPosition = position.target;
     // _lastMapPosition.latitude,
     // _lastMapPosition.longitude,

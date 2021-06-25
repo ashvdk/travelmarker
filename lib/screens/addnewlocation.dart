@@ -1,21 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
-import 'package:travelpointer/classes/restapi.dart';
 import 'package:travelpointer/components/categorieswithicons.dart';
-import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io';
-import 'package:geocoder/geocoder.dart';
-import 'dart:convert';
-
-import 'package:travelpointer/models/alldata.dart';
-import 'package:travelpointer/screens/locationsearch.dart';
-import 'package:travelpointer/screens/selectcategory.dart';
 
 class AddaNewLocation extends StatefulWidget {
   final Function addlocation;
@@ -216,68 +205,32 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
                   runSpacing: 20.0,
                   children: [
                     CategoriesWithIcons(
-                      geticons: Icons.agriculture,
-                      title: 'Agriculture',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.ev_station_rounded,
-                      title: 'EV Station',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.electric_scooter,
-                      title: 'Electric Scooter',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.local_grocery_store_outlined,
-                      title: 'Shopping',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.bike_scooter,
-                      title: 'Rent Bikes',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.waves,
+                      imgurl: 'assets/icons8-beach-100.png',
                       title: 'Beach',
                       setCategoryFunc: setCategory,
                       category: category,
                     ),
                     CategoriesWithIcons(
-                      geticons: Icons.terrain,
-                      title: 'Terrain',
+                      imgurl: 'assets/icons8-restaurant-100.png',
+                      title: 'Restaurant',
                       setCategoryFunc: setCategory,
                       category: category,
                     ),
                     CategoriesWithIcons(
-                      geticons: Icons.agriculture,
-                      title: 'Agriculture',
+                      imgurl: 'assets/icons8-hindu-temple-96.png',
+                      title: 'Temple',
                       setCategoryFunc: setCategory,
                       category: category,
                     ),
                     CategoriesWithIcons(
-                      geticons: Icons.agriculture,
-                      title: 'Agriculture',
+                      imgurl: 'assets/icons8-national-park-100.png',
+                      title: 'Park',
                       setCategoryFunc: setCategory,
                       category: category,
                     ),
                     CategoriesWithIcons(
-                      geticons: Icons.agriculture,
-                      title: 'Agriculture',
-                      setCategoryFunc: setCategory,
-                      category: category,
-                    ),
-                    CategoriesWithIcons(
-                      geticons: Icons.agriculture,
-                      title: 'Agriculture',
+                      imgurl: 'assets/icons8-theme-park-96.png',
+                      title: 'Theme Park',
                       setCategoryFunc: setCategory,
                       category: category,
                     ),

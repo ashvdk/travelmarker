@@ -17,15 +17,21 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
   //final storage = new FlutterSecureStorage();
   TextEditingController _usernametexfieldController;
   TextEditingController _nametexfieldController;
+  TextEditingController _descriptionController;
   bool showLoading = false;
   String _validateUsername;
   String _validatename;
+  var displayName = FirebaseAuth.instance.currentUser.displayName;
+  var gender = null;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("FirebaseAuth.instance.currentUser.displayName");
+    print(displayName == "");
     _usernametexfieldController = TextEditingController();
     _nametexfieldController = TextEditingController();
+    _descriptionController = TextEditingController();
   }
 
   @override
@@ -38,18 +44,91 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    //'Choose your username',
-                    'Details',
-                    style: TextStyle(fontSize: 35.0),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     //'Choose your username',
+                //     'Details',
+                //     style: TextStyle(fontSize: 35.0),
+                //   ),
+                // ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            gender = "male";
+                          });
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Image.asset('assets/icons8-user-80.png'),
+                              Text(
+                                'Male',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: gender == "male"
+                                      ? Colors.blueAccent
+                                      : Colors.black,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            gender = "female";
+                          });
+                        },
+                        child: Container(
+                          width: 90.0,
+                          child: Column(
+                            children: [
+                              Image.asset('assets/icons8-person-female-96.png'),
+                              Text(
+                                'Female',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: gender == "female"
+                                      ? Colors.blueAccent
+                                      : Colors.black,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                FirebaseAuth.instance.currentUser.displayName == null
+                gender == null
+                    ? Container(
+                        child: Center(
+                          child: Text(
+                            'Please choose your gender',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        color: Color(0xFFff6666),
+                        width: MediaQuery.of(context).size.width,
+                        height: 50.0,
+                      )
+                    : Text(""),
+                SizedBox(
+                  height: 20.0,
+                ),
+                displayName == null || displayName == ""
                     ? TextField(
                         controller: _nametexfieldController,
                         decoration: InputDecoration(
@@ -79,7 +158,17 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 30.0,
+                  height: 20.0,
+                ),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Description about your self',
+                  ),
+                ),
+                SizedBox(
+                  height: 20.0,
                 ),
                 TextButton(
                   onPressed: () async {
@@ -106,6 +195,9 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                       });
                       return;
                     }
+                    if (gender == null) {
+                      return;
+                    }
                     setState(() {
                       _validatename = "NAME_OK";
                       showLoading = true;
@@ -118,11 +210,13 @@ class _AddUsernameScreenState extends State<AddUsernameScreen> {
                     var body = jsonEncode({
                       "uid": value.uid,
                       "email": value.email,
-                      "displayName": value.displayName == null
+                      "displayName": displayName == null || displayName == ""
                           ? _nametexfieldController.text
                           : value.displayName,
                       "username": _usernametexfieldController.text,
-                      "photoURL": value.photoURL
+                      "photoURL": value.photoURL,
+                      "gender": gender,
+                      "description": _descriptionController.text
                     });
 
                     http.Response response =

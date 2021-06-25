@@ -9,7 +9,13 @@ import 'dart:convert';
 class SigninWithUsernameandPassword extends StatefulWidget {
   final bool chooseloginorcreate;
   final Function setUser;
-  SigninWithUsernameandPassword({this.chooseloginorcreate, this.setUser});
+  final Function setbuttonSetting;
+  final bool disableloginorcreate;
+  SigninWithUsernameandPassword(
+      {this.chooseloginorcreate,
+      this.setUser,
+      this.setbuttonSetting,
+      this.disableloginorcreate});
   @override
   _SigninWithUsernameandPasswordState createState() =>
       _SigninWithUsernameandPasswordState();
@@ -33,7 +39,7 @@ class _SigninWithUsernameandPasswordState
   var createloading = false;
   bool showpasswordforlogin = false;
   bool showpasswordforcreate = false;
-
+  Color colors = Color(0xff394847);
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -44,41 +50,45 @@ class _SigninWithUsernameandPasswordState
   }
 
   void signin() async {
-    if (_email.text.isEmpty) {
+    if (!widget.disableloginorcreate) {
+      if (_email.text.isEmpty) {
+        setState(() {
+          emailloginerror = true;
+        });
+        return;
+      }
+      if (_password.text.isEmpty) {
+        setState(() {
+          passwordloginerror = true;
+        });
+        return;
+      }
       setState(() {
-        emailloginerror = true;
+        emailloginerror = false;
+        passwordloginerror = false;
+        signinloading = true;
       });
-      return;
+      widget.setbuttonSetting();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('userregistered', "error");
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _email.text, password: _password.text)
+          .then((value) async {
+        setState(() {
+          signinerror = false;
+          signinerrormessage = "";
+        });
+        requestuserdetails();
+      }).catchError((onError) {
+        widget.setbuttonSetting();
+        setState(() {
+          signinerror = true;
+          signinerrormessage = onError.message;
+          signinloading = false;
+        });
+      });
     }
-    if (_password.text.isEmpty) {
-      setState(() {
-        passwordloginerror = true;
-      });
-      return;
-    }
-    setState(() {
-      emailloginerror = false;
-      passwordloginerror = false;
-      signinloading = true;
-    });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userregistered', "error");
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-            email: _email.text, password: _password.text)
-        .then((value) async {
-      setState(() {
-        signinerror = false;
-        signinerrormessage = "";
-      });
-      requestuserdetails();
-    }).catchError((onError) {
-      setState(() {
-        signinerror = true;
-        signinerrormessage = onError.message;
-        signinloading = false;
-      });
-    });
   }
 
   Future<void> signOut() async {
@@ -118,66 +128,107 @@ class _SigninWithUsernameandPasswordState
   }
 
   void signup() {
-    if (_emailcreate.text.isEmpty) {
+    if (!widget.disableloginorcreate) {
+      if (_emailcreate.text.isEmpty) {
+        setState(() {
+          emailcreateerror = true;
+        });
+        return;
+      }
+      if (_passwordcreate.text.isEmpty) {
+        setState(() {
+          passwordcreateerror = true;
+        });
+        return;
+      }
       setState(() {
-        emailcreateerror = true;
+        emailcreateerror = false;
+        passwordcreateerror = false;
+        createloading = true;
       });
-      return;
+      widget.setbuttonSetting();
+      FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _emailcreate.text, password: _passwordcreate.text)
+          .then((value) async {
+        setState(() {
+          createerror = false;
+          createerrormessage = "";
+        });
+        requestuserdetails();
+      }).catchError((onError) {
+        widget.setbuttonSetting();
+        setState(() {
+          createerror = true;
+          createerrormessage = onError.message;
+          createloading = false;
+        });
+      });
     }
-    if (_passwordcreate.text.isEmpty) {
-      setState(() {
-        passwordcreateerror = true;
-      });
-      return;
-    }
-    setState(() {
-      emailcreateerror = false;
-      passwordcreateerror = false;
-      createloading = true;
-    });
-    FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: _emailcreate.text, password: _passwordcreate.text)
-        .then((value) async {
-      setState(() {
-        createerror = false;
-        createerrormessage = "";
-      });
-      requestuserdetails();
-    }).catchError((onError) {
-      //if (onError.code == "invalid-email") {
-      setState(() {
-        createerror = true;
-        createerrormessage = onError.message;
-        createloading = false;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return widget.chooseloginorcreate
         ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
+                style: TextStyle(color: Colors.white),
                 controller: _email,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
+                  // fillColor: Color(0xff394847),
+                  // filled: true,
                   labelText: 'Email (required)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    //borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
+
                   errorText: emailloginerror ? "Email cannot be empty" : null,
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.person_alt,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
                 height: 30.0,
               ),
               TextField(
+                style: TextStyle(color: Colors.white),
                 controller: _password,
                 obscureText: !showpasswordforlogin,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Password (required)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    //borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
                   errorText:
                       passwordloginerror ? "Password cannot be empty" : null,
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.lock,
+                      color: Colors.white,
+                    ),
+                  ),
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -185,8 +236,14 @@ class _SigninWithUsernameandPasswordState
                       });
                     },
                     icon: showpasswordforlogin
-                        ? Icon(CupertinoIcons.eye)
-                        : Icon(CupertinoIcons.eye_slash),
+                        ? Icon(
+                            CupertinoIcons.eye,
+                            color: Colors.white,
+                          )
+                        : Icon(
+                            CupertinoIcons.eye_slash,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
               ),
@@ -240,24 +297,58 @@ class _SigninWithUsernameandPasswordState
         : Column(
             children: [
               TextField(
+                style: TextStyle(color: Colors.white),
                 controller: _emailcreate,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Email (required)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    //borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
                   errorText: emailcreateerror ? "Email cannot be empty" : null,
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.person_alt,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
                 height: 30.0,
               ),
               TextField(
+                style: TextStyle(color: Colors.white),
                 controller: _passwordcreate,
                 obscureText: !showpasswordforcreate,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Password (required)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    //borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: colors),
+                    //borderRadius: BorderRadius.circular(10.0),
+                  ),
                   errorText:
                       passwordcreateerror ? "Password cannot be empty" : null,
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.lock,
+                      color: Colors.white,
+                    ),
+                  ),
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -265,8 +356,14 @@ class _SigninWithUsernameandPasswordState
                       });
                     },
                     icon: showpasswordforcreate
-                        ? Icon(CupertinoIcons.eye)
-                        : Icon(CupertinoIcons.eye_slash),
+                        ? Icon(
+                            CupertinoIcons.eye,
+                            color: Colors.white,
+                          )
+                        : Icon(
+                            CupertinoIcons.eye_slash,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
               ),
