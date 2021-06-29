@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -14,7 +14,6 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  final storage = new FlutterSecureStorage();
   Future<void> signOutGoogle() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();

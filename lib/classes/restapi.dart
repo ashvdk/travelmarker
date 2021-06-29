@@ -7,23 +7,26 @@ class RestAPI {
 
   String url = "http://192.168.1.6:8080/";
   Future postTheRequest(String apiURL, var body, var token) async {
-    return await http.post('$url$apiURL', body: body, headers: {
+    var url2 = Uri.parse('$url$apiURL');
+    return await http.post(url2, body: body, headers: {
       HttpHeaders.authorizationHeader: token,
       HttpHeaders.contentTypeHeader: "application/json"
     });
   }
 
   Future getTheRequest(String apiURL, var token) async {
+    var url2 = Uri.parse('$url$apiURL');
     if (token == "NO_TOKEN_PRESENT") {
-      return await http.get('$url$apiURL');
+      return await http.get(url2);
     } else {
-      return await http.get('$url$apiURL',
-          headers: {HttpHeaders.authorizationHeader: token});
+      return await http
+          .get(url2, headers: {HttpHeaders.authorizationHeader: token});
     }
   }
 
   Future delete(String apiURL, var token) async {
-    return await http.delete('$url$apiURL',
-        headers: {HttpHeaders.authorizationHeader: token});
+    var url2 = Uri.parse('$url$apiURL');
+    return await http
+        .delete(url2, headers: {HttpHeaders.authorizationHeader: token});
   }
 }

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
 import 'package:travelpointer/components/categorieswithicons.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddaNewLocation extends StatefulWidget {
   final Function addlocation;
@@ -18,6 +20,7 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
   AddANewLocation newlocationdata = AddANewLocation();
   var stepperForm = "collect_map_coordinates";
   var zoom = null;
+  PickedFile imagefile;
   TextEditingController _nameoftheplacetexfieldController;
   TextEditingController _descriptionoftheplacetexfieldController;
 
@@ -72,7 +75,8 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
       'optimalCoordinates': [
         _lastMapPosition.latitude,
         _lastMapPosition.longitude,
-      ]
+      ],
+      'files': imagefile
     });
     Navigator.pop(context);
     // http.Response response =
@@ -95,6 +99,14 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
     //         'id': userlocation['result'][0]['_id']
     //       });
     // }
+  }
+
+  Future<void> _pickImage() async {
+    PickedFile selected =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    setState(() {
+      imagefile = selected;
+    });
   }
 
   @override
@@ -346,6 +358,37 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
                   errorText: descriptionerror ? "Cannot be empty" : null,
                 ),
               ),
+              SizedBox(
+                height: 30.0,
+              ),
+              GestureDetector(
+                onTap: () {
+                  _pickImage();
+                  print("choose image from the gallery");
+                },
+                child: Container(
+                  child: Row(
+                    children: [
+                      Icon(Icons.photo_library),
+                      SizedBox(
+                        width: 20.0,
+                      ),
+                      Text('Pick image from gallery'),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              imagefile != null
+                  ? Image.file(
+                      File(imagefile.path),
+                      width: 100.0,
+                      height: 100.0,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(),
               SizedBox(
                 height: 30.0,
               ),

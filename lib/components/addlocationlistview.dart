@@ -16,6 +16,7 @@ class _AddLocationListViewState extends State<AddLocationListView> {
     return ListView.builder(
         itemCount: widget.locations.length,
         itemBuilder: (context, index) {
+          print(widget.locations[index]);
           return Container(
             padding: EdgeInsets.only(bottom: 10.0),
             color: Colors.white,
@@ -24,7 +25,7 @@ class _AddLocationListViewState extends State<AddLocationListView> {
               children: [
                 Container(
                   // width: MediaQuery.of(context).size.width - 50.0,
-                  height: 100.0,
+                  // height: 100.0,
                   child: GoogleMapLiteMode(
                     location: [widget.locations[index]],
                     optimalZoom: widget.locations[index]['optimalZoom'],
@@ -32,23 +33,23 @@ class _AddLocationListViewState extends State<AddLocationListView> {
                         ['optimalCoordinates'],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
-                    left: 10.0,
-                    right: 10.0,
-                    bottom: 10.0,
-                  ),
-                  child: Text("${widget.locations[index]['name']}"),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(
-                    left: 10.0,
-                    right: 10.0,
-                    bottom: 10.0,
-                  ),
-                  child: Text("${widget.locations[index]['description']}"),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.only(
+                //     top: 10.0,
+                //     left: 10.0,
+                //     right: 10.0,
+                //     bottom: 10.0,
+                //   ),
+                //   child: Text("${widget.locations[index]['name']}"),
+                // ),
+                // Container(
+                //   padding: const EdgeInsets.only(
+                //     left: 10.0,
+                //     right: 10.0,
+                //     bottom: 10.0,
+                //   ),
+                //   child: Text("${widget.locations[index]['description']}"),
+                // ),
                 Container(
                   child: Center(
                     child: GestureDetector(

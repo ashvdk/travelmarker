@@ -13,20 +13,18 @@ class LocationListView extends StatefulWidget {
 
 class _LocationListViewState extends State<LocationListView> {
   var locationlist = [];
+  PageController _pageviewcontroller;
+  var markerid = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //getLocationList();
+    _pageviewcontroller = PageController(
+      initialPage: 0,
+    );
   }
 
-  // void getLocationList() {
-  //
-  //   setState(() {
-  //     locationlist = [...alllocations];
-  //   });
-  // }
-
+  final GlobalKey _myWidgetState = GlobalKey();
   @override
   Widget build(BuildContext context) {
     var alllocations = [];
@@ -73,36 +71,15 @@ class _LocationListViewState extends State<LocationListView> {
                 "${onelocation['caption']}",
               ),
             ),
-            Stack(
-              children: [
-                Container(
-                  // width: MediaQuery.of(context).size.width - 50.0,
-                  height: 200.0,
-                  child: GoogleMapLiteMode(
-                    location: onelocation['locations'],
-                    optimalZoom: onelocation['optimalZoom'],
-                    optimalCoordinates: onelocation['optimalCoordinates'],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => MapWithMarkers(
-                          alllocations: onelocation['locations'],
-                        ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    // width: MediaQuery.of(context).size.width - 50.0,
-                    height: 100.0,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(''),
-                  ),
-                )
-              ],
+            // Stack(
+            //   children: [
+            Container(
+              child: GoogleMapLiteMode(
+                location: onelocation['locations'],
+                optimalZoom: onelocation['optimalZoom'].toDouble(),
+                optimalCoordinates: onelocation['optimalCoordinates'],
+                markerid: markerid,
+              ),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travelpointer/classes/restapi.dart';
+import 'package:travelpointer/components/clublistcomponent.dart';
 import 'package:travelpointer/components/searchresultcomponent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -17,8 +18,9 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _searchtextfieldController;
-  var usersList = [];
-
+  var results = [];
+  var option = "people";
+  String searchterm = "";
   @override
   void initState() {
     // TODO: implement initState
@@ -26,27 +28,27 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchtextfieldController = TextEditingController();
   }
 
-  Future getTheUsersList(String username) async {
+  Future getTheUsersList(String searchterm) async {
     var token = Provider.of<FirebaseData>(context, listen: false).token;
     var uid = FirebaseAuth.instance.currentUser.uid;
     http.Response response = await RestAPI()
-        .getTheRequest('searchusername?username=${username}&uid=${uid}', token);
-    var users = jsonDecode(response.body)['result'];
+        .getTheRequest('search?q=$searchterm&uid=$uid&option=$option', token);
+    var result = jsonDecode(response.body)['result'];
     setState(() {
-      usersList = [...users];
+      results = [...result];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print(usersList);
     return Scaffold(
       //backgroundColor: Color(0xFF05a859), //60992D,
-      backgroundColor: Colors.black, //60992D,
+      // backgroundColor: Colors.black, //60992D,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            color: Colors.black,
             padding: EdgeInsets.only(
                 top: 60.0, left: 30.0, bottom: 30.0, right: 30.0),
             child: Column(
@@ -54,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Search for people',
+                    'Search',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
@@ -71,8 +73,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     style: TextStyle(backgroundColor: Colors.white),
                     controller: _searchtextfieldController,
                     onChanged: (value) async {
+                      setState(() {
+                        searchterm = value;
+                      });
                       await getTheUsersList(value);
-                      print(value);
                     },
                     decoration: InputDecoration(
                       contentPadding:
@@ -106,6 +110,96 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
+          Container(
+            padding: EdgeInsets.only(
+                left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        option = "people";
+                      });
+                      if (searchterm.length > 3) {
+                        getTheUsersList(searchterm);
+                      }
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.pink[50],
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "People",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          option == "people"
+                              ? Icon(
+                                  CupertinoIcons.checkmark,
+                                  color: Colors.pink,
+                                  size: 20,
+                                )
+                              : Text(""),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 15.0,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        option = "clubs";
+                      });
+                      if (searchterm.length > 3) {
+                        getTheUsersList(searchterm);
+                      }
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.pink[50],
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Clubs",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          option == "clubs"
+                              ? Icon(
+                                  CupertinoIcons.checkmark,
+                                  color: Colors.pink,
+                                  size: 20,
+                                )
+                              : Text(""),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -116,9 +210,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 //   topRight: Radius.circular(30.0),
                 // ),
               ),
-              child: SearchResultComponent(
-                users: usersList,
-              ),
+              child: option == "people"
+                  ? SearchResultComponent(users: results)
+                  : ClubListComponent(
+                      clubs: results,
+                    ),
             ),
           )
         ],

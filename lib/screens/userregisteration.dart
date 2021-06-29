@@ -48,21 +48,21 @@ class _UserRegisterationState extends State<UserRegisteration> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Container(
+        body: SingleChildScrollView(
+            child: Container(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: [
-              Expanded(
-                child: Container(
-                  child: Center(
-                    child: Text(
-                      'Explore',
-                      style: TextStyle(
-                        fontFamily: 'Sacramento',
-                        color: Colors.black,
-                        fontSize: 50.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+              Container(
+                height: 200.0,
+                child: Center(
+                  child: Text(
+                    'Explore',
+                    style: TextStyle(
+                      fontFamily: 'Sacramento',
+                      color: Colors.black,
+                      fontSize: 50.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -108,7 +108,10 @@ class _UserRegisterationState extends State<UserRegisteration> {
                             'Login',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -132,7 +135,10 @@ class _UserRegisterationState extends State<UserRegisteration> {
                             'Create',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -151,7 +157,7 @@ class _UserRegisterationState extends State<UserRegisteration> {
               ),
             ],
           ),
-        ),
+        )),
       ),
     );
   }
