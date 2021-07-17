@@ -70,9 +70,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       itemBuilder: (context, index) {
                         return ListTile(
                           leading: Actor(
-                              size: 22.0,
-                              photoURL: activity[index]['users'][0]
-                                  ['photoURL']),
+                              size: 22.0, user: activity[index]['users'][0]),
                           title: Align(
                             alignment: Alignment(-1.0, 0),
                             child: Text(

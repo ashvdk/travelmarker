@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 
 class ProfileInfo extends StatelessWidget {
   final String title;
-  ProfileInfo({this.title});
+  final int details;
+  ProfileInfo({this.title, this.details});
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
-          '25',
+          '$details',
           style: TextStyle(
             fontSize: 17.0,
             fontWeight: FontWeight.w600,

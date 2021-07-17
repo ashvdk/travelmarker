@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
 import 'package:travelpointer/models/alldata.dart';
+
 import 'package:travelpointer/models/firebasedata.dart';
 import 'package:travelpointer/models/markerimage.dart';
+import 'package:travelpointer/models/recommendedlocations.dart';
 import 'package:travelpointer/models/userdetails.dart';
 import 'package:travelpointer/screens/addusernamescreen.dart';
 import 'package:travelpointer/screens/homepage.dart';
@@ -39,6 +41,9 @@ class MyAPP extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: FirebaseData(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Recommendedlocations(),
         ),
       ],
       //FirebaseData

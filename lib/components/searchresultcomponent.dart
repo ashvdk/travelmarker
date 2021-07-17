@@ -19,7 +19,7 @@ class _SearchResultComponentState extends State<SearchResultComponent> {
       itemCount: widget.users.length,
       itemBuilder: (context, index) {
         return ListTile(
-          leading: Actor(size: 30.0, photoURL: widget.users[index]['photoURL']),
+          leading: Actor(size: 30.0, user: widget.users[index]),
           title: Text('${widget.users[index]['displayName']}'),
           trailing: InkWell(
             child: IconButton(

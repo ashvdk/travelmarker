@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travelpointer/screens/photoshowui.dart';
 
 class PageViewLocationInfo extends StatefulWidget {
   final Map marker;
@@ -48,6 +49,38 @@ class _PageViewLocationInfoState extends State<PageViewLocationInfo> {
               ),
               Text(
                 "${description}",
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Container(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: widget.marker['downloadurls'].map<Widget>((e) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  PhotoSHowUI(photourl: e),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 70.0,
+                          height: 70.0,
+                          color: Colors.red,
+                          child: Image.network(
+                            "$e",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ],
           ),

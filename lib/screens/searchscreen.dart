@@ -28,9 +28,10 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchtextfieldController = TextEditingController();
   }
 
-  Future getTheUsersList(String searchterm) async {
+  Future getTheResult() async {
     var token = Provider.of<FirebaseData>(context, listen: false).token;
     var uid = FirebaseAuth.instance.currentUser.uid;
+
     http.Response response = await RestAPI()
         .getTheRequest('search?q=$searchterm&uid=$uid&option=$option', token);
     var result = jsonDecode(response.body)['result'];
@@ -76,7 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       setState(() {
                         searchterm = value;
                       });
-                      await getTheUsersList(value);
+                      await getTheResult();
                     },
                     decoration: InputDecoration(
                       contentPadding:
@@ -122,8 +123,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       setState(() {
                         option = "people";
                       });
-                      if (searchterm.length > 3) {
-                        getTheUsersList(searchterm);
+                      if (searchterm.length >= 5) {
+                        getTheResult();
                       }
                     },
                     child: Container(
@@ -163,8 +164,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       setState(() {
                         option = "clubs";
                       });
-                      if (searchterm.length > 3) {
-                        getTheUsersList(searchterm);
+                      if (searchterm.length >= 5) {
+                        getTheResult();
                       }
                     },
                     child: Container(

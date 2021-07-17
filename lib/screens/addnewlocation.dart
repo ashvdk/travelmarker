@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:travelpointer/classes/addanewlocation.dart';
 import 'package:travelpointer/components/categorieswithicons.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:async';
 
 class AddaNewLocation extends StatefulWidget {
   final Function addlocation;
@@ -20,7 +21,9 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
   AddANewLocation newlocationdata = AddANewLocation();
   var stepperForm = "collect_map_coordinates";
   var zoom = null;
-  PickedFile imagefile;
+  var imagecounterror = false;
+  //PickedFile imagefile;
+  List<PickedFile> imagefile = [];
   TextEditingController _nameoftheplacetexfieldController;
   TextEditingController _descriptionoftheplacetexfieldController;
 
@@ -38,10 +41,7 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
     target: _center,
     zoom: 5,
   );
-  static final CameraPosition _kLake = CameraPosition(
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    zoom: 15.00,
-  );
+
   LatLng _lastMapPosition = _center;
 
   void _onCameraMove(CameraPosition position) {
@@ -76,36 +76,18 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
         _lastMapPosition.latitude,
         _lastMapPosition.longitude,
       ],
-      'files': imagefile
+      'filepath': imagefile
     });
     Navigator.pop(context);
-    // http.Response response =
-    //     await RestAPI().postTheRequest('user/$uid/location', body, token);
-    // if (response.statusCode == 200) {
-    //   var userlocation = jsonDecode(response.body);
-    //   print(userlocation['result'][0]['_id']);
-    //   print(userlocation['result'][0]['location']['coordinates']);
-    //   Provider.of<AllData>(context, listen: false)
-    //       .setanotherMarker(userlocation['result']);
-    //   Navigator.of(context).pushNamedAndRemoveUntil(
-    //       'showthelocations', (Route<dynamic> route) => false,
-    //       arguments: {
-    //         'latlang': LatLng(
-    //           double.parse(
-    //               userlocation['result'][0]['location']['coordinates'][0]),
-    //           double.parse(
-    //               userlocation['result'][0]['location']['coordinates'][1]),
-    //         ),
-    //         'id': userlocation['result'][0]['_id']
-    //       });
-    // }
   }
 
   Future<void> _pickImage() async {
+    var images = [];
     PickedFile selected =
         await ImagePicker().getImage(source: ImageSource.gallery);
+    images.add(selected);
     setState(() {
-      imagefile = selected;
+      imagefile = [...imagefile, ...images];
     });
   }
 
@@ -171,21 +153,6 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
                       setState(() {
                         stepperForm = "select_category";
                       });
-
-                      //Navigator.of(context).pushNamed('selectlocationcategory');
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (BuildContext context) =>
-                      //         SelectLocationCategory(),
-                      //   ),
-                      // );
-                      // final coordinates = new Coordinates(
-                      //     newlocationdata.currentLocationData[1],
-                      //     newlocationdata.currentLocationData[0]);
-                      // var address = await Geocoder.local
-                      //     .findAddressesFromCoordinates(coordinates);
-                      // newlocationdata.city = address.first.locality;
                     },
                     child: Text(
                       'Next',
@@ -361,10 +328,28 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
               SizedBox(
                 height: 30.0,
               ),
+              imagefile.length == 5
+                  ? Container(
+                      child: Center(
+                        child: Text(
+                          'You cannot select more then 5 images',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      color: Color(0xFFff6666),
+                      width: MediaQuery.of(context).size.width,
+                      height: 50.0,
+                    )
+                  : Container(),
+              SizedBox(
+                height: 30.0,
+              ),
               GestureDetector(
                 onTap: () {
-                  _pickImage();
-                  print("choose image from the gallery");
+                  if (imagefile.length < 5) {
+                    _pickImage();
+                  }
                 },
                 child: Container(
                   child: Row(
@@ -381,16 +366,42 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
               SizedBox(
                 height: 20.0,
               ),
-              imagefile != null
-                  ? Image.file(
-                      File(imagefile.path),
-                      width: 100.0,
-                      height: 100.0,
-                      fit: BoxFit.cover,
+              imagefile.length != 0
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: imagefile.map((e) {
+                          return Container(
+                            child: Image.file(
+                              File(e.path),
+                              width: 100.0,
+                              height: 100.0,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        }).toList()
+
+                        // child: Image.file(
+                        //   File(marker['filepath']),
+                        //   width: 100.0,
+                        //   height: 100.0,
+                        //   fit: BoxFit.cover,
+                        // ),
+                        ,
+                      ),
                     )
                   : Container(),
               SizedBox(
                 height: 30.0,
+              ),
+              imagecounterror
+                  ? Text(
+                      'Need to add atleast one image',
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : Text(''),
+              SizedBox(
+                height: 10.0,
               ),
               TextButton(
                 child: Text(
@@ -403,6 +414,10 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
                       titleerror = true;
                     });
                     return;
+                  } else {
+                    setState(() {
+                      titleerror = false;
+                    });
                   }
                   if (_descriptionoftheplacetexfieldController.text.isEmpty) {
                     setState(() {
@@ -410,9 +425,16 @@ class _AddaNewLocationState extends State<AddaNewLocation> {
                     });
                     return;
                   }
+                  if (imagefile.length == 0) {
+                    setState(() {
+                      imagecounterror = true;
+                    });
+                    return;
+                  }
                   setState(() {
                     titleerror = false;
                     descriptionerror = false;
+                    imagecounterror = false;
                   });
                   saveTheNewLocation();
                 },

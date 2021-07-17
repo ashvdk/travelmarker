@@ -90,7 +90,9 @@ class _ClubScreenState extends State<ClubScreen> {
                         Text(
                           "Add New",
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
